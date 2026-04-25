@@ -23,6 +23,7 @@ export default function LandingPage() {
   const [progress, setProgress] = useState(35);
   const [scrollY, setScrollY] = useState(0);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
