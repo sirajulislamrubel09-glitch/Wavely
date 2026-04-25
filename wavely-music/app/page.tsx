@@ -160,14 +160,23 @@ export default function LandingPage() {
         </div>
 
         <div style={{ display: "flex", gap: 10 }}>
-          <a href="/auth">
-            <button className="btn-ghost" style={{ padding: "8px 18px", borderRadius: 99, fontSize: 13, fontWeight: 600 }}>Log in</button>
-          </a>
-          <a href="/auth">
-            <button className="btn-primary" style={{ padding: "8px 18px", borderRadius: 99, fontSize: 13, fontWeight: 600 }}>Get Started</button>
-          </a>
-        </div>
-      </nav>
+  {isLoggedIn ? (
+    <a href="/dashboard">
+      <button className="btn-primary" style={{ padding: "8px 18px", borderRadius: 99, fontSize: 13, fontWeight: 600 }}>
+        Go to App →
+      </button>
+    </a>
+  ) : (
+    <>
+      <a href="/auth">
+        <button className="btn-ghost" style={{ padding: "8px 18px", borderRadius: 99, fontSize: 13, fontWeight: 600 }}>Log in</button>
+      </a>
+      <a href="/auth">
+        <button className="btn-primary" style={{ padding: "8px 18px", borderRadius: 99, fontSize: 13, fontWeight: 600 }}>Get Started</button>
+      </a>
+    </>
+  )}
+</div>
 
       {/* HERO */}
       <section ref={heroRef} style={{
