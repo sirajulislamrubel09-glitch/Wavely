@@ -32,6 +32,14 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+   useEffect(() => {
+     import("../lib/supabase").then(({ supabase }) => {
+     supabase.auth.getSession().then(({ data }) => {
+      setIsLoggedIn(!!data.session);
+     });
+   });
+ }, []);
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (playing) {
