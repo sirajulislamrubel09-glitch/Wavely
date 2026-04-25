@@ -177,6 +177,7 @@ export default function LandingPage() {
     </>
   )}
 </div>
+    </nav>
 
       {/* HERO */}
       <section ref={heroRef} style={{
