@@ -11,6 +11,12 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+      setTimeout(() => setToast(null), 2500);
+      };const
 
   useEffect(() => {
     const init = async () => {
@@ -519,14 +525,14 @@ export default function ProfilePage() {
               <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase" }}>Settings</div>
             </div>
             {[
-              { icon: "👤", label: "Account Settings", desc: "Email, password, security", right: "›" },
-              { icon: "🔔", label: "Notifications", desc: "Manage your alerts", right: "›" },
-              { icon: "🔒", label: "Privacy", desc: "Who can see your activity", right: "›" },
-              { icon: "🎨", label: "Appearance", desc: "Theme and display", right: "›" },
-              { icon: "🔗", label: "Discord Link", desc: "Connect your account", right: "Connect", rightColor: "#7c3aed" },
-              { icon: "⭐", label: "Upgrade to Premium", desc: "No ads · Exclusive spaces", right: "$3.99/mo", rightColor: "#f59e0b" },
+              { icon: "👤", label: "Account Settings", desc: "Email, password, security", right: "›", onClick: () => setEditing(true) },
+              { icon: "🔔", label: "Notifications", desc: "Manage your alerts", right: "›", onClick: () => showToast("Notifications coming soon! 🔔") },
+              { icon: "🔒", label: "Privacy", desc: "Who can see your activity", right: "›", onClick: () => showToast("Privacy settings coming soon! 🔒") },
+              { icon: "🎨", label: "Appearance", desc: "Theme and display", right: "›", onClick: () => showToast("Dark mode only for now 😎") },
+              { icon: "🔗", label: "Discord Link", desc: "Connect your account", right: "Connect", rightColor: "#7c3aed", onClick: () => showToast("Discord linking coming soon! 🔗") },
+              { icon: "⭐", label: "Upgrade to Premium", desc: "No ads · Exclusive spaces", right: "$3.99/mo", rightColor: "#f59e0b", onClick: () => showToast("Premium launching soon! ⭐") },
             ].map((item, i) => (
-              <div key={i} className="settings-row">
+              <div key={i} className="settings-row" onClick={item.onClick}>
                 <div style={{
                   width: 38, height: 38, borderRadius: 11,
                   background: "#1a1a28", border: "1px solid #2a2a3e",
@@ -561,8 +567,30 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Toast notification */}
+      {toast && (
+        <div style={{
+          position: "fixed",
+          bottom: 90, left: "50%",
+          transform: "translateX(-50%)",
+          background: "#1e1e2e",
+          border: "1px solid #7c3aed44",
+          borderRadius: 99,
+          padding: "12px 24px",
+          color: "#e8e8f8",
+          fontSize: 13,
+          fontWeight: 600,
+          zIndex: 100,
+          whiteSpace: "nowrap",
+          boxShadow: "0 8px 32px #00000066",
+          animation: "fade-up 0.3s ease",
+        }}>
+          {toast}
+        </div>
+      )}
+
       {/* ── BOTTOM NAV ── */}
-      <div style={{
+       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
         background: "#09090f",
         borderTop: "1px solid #ffffff08",
