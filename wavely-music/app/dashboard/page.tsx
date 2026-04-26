@@ -1,36 +1,45 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 
-const spaces = [
-  { id: 1, name: "Lo-Fi Study Lounge", genre: "Lo-Fi", listeners: 1204, live: true, color: "#7c3aed", emoji: "📚" },
-  { id: 2, name: "Midnight Synthwave Club", genre: "Synthwave", listeners: 876, live: true, color: "#0ea5e9", emoji: "🌙" },
-  { id: 3, name: "Berlin Techno Underground", genre: "Techno", listeners: 543, live: true, color: "#10b981", emoji: "⚡" },
-  { id: 4, name: "Jazz & Blues Late Night", genre: "Jazz", listeners: 329, live: false, color: "#f59e0b", emoji: "🎷" },
-  { id: 5, name: "Chill Hop Café", genre: "Chill", listeners: 892, live: true, color: "#ec4899", emoji: "☕" },
-];
+const JAMENDO_ID = process.env.NEXT_PUBLIC_JAMENDO_CLIENT_ID;
 
-const forYou = [
-  { title: "Acoustic Resonance", artist: "NeonExplorer", genre: "NEW RELEASE", likes: "4.2k", tracks: 12, color: "#7c3aed" },
-  { title: "Night Drive", artist: "RetroWave Collective", genre: "TRENDING", likes: "8.1k", tracks: 8, color: "#0ea5e9" },
-  { title: "Deep Focus Vol.3", artist: "LoFi Masters", genre: "FOR YOU", likes: "2.9k", tracks: 15, color: "#10b981" },
-];
+interface Track {
+  id: string;
+  name: string;
+  artist_name: string;
+  album_name: string;
+  duration: number;
+  audio: string;
+  image: string;
+  genre?: string;
+}
 
-const recentTracks = [
-  { title: "Cybernetic Dawn", artist: "NeonExplorer", duration: "3:45", genre: "Synthwave" },
-  { title: "Midnight Rain", artist: "LoFi Collective", duration: "4:12", genre: "Lo-Fi" },
-  { title: "Electric Soul", artist: "BassArchitect", duration: "5:01", genre: "Electronic" },
-  { title: "Neon Lights", artist: "RetroWave", duration: "3:28", genre: "Chill" },
+const genres = [
+  { label: "🌙 Lo-Fi", tag: "lofi" },
+  { label: "⚡ Electronic", tag: "electronic" },
+  { label: "🎷 Jazz", tag: "jazz" },
+  { label: "🌊 Ambient", tag: "ambient" },
+  { label: "🔊 Techno", tag: "techno" },
+  { label: "☕ Chill", tag: "chillout" },
 ];
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState("home");
+  const [tracks, setTracks] = useState<Track[]>([]);
+  const [featuredTracks, setFeaturedTracks] = useState<Track[]>([]);
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState(0);
-  const [progress, setProgress] = useState(35);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("home");
+  const [activeGenre, setActiveGenre] = useState("lofi");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Auth check
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) window.location.href = "/auth";
@@ -38,622 +47,662 @@ export default function Dashboard() {
     });
   }, []);
 
+  // Fetch featured tracks on load
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (playing) {
-      interval = setInterval(() => {
-        setProgress(p => p >= 100 ? 0 : p + 0.2);
-      }, 100);
+    fetchTracks("lofi", true);
+    fetchTracks("electronic", false);
+  }, []);
+
+  // Fetch tracks by genre
+  const fetchTracks = async (tag: string, featured: boolean) => {
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `https://api.jamendo.com/v3/tracks/?client_id=${JAMENDO_ID}&format=json&limit=10&tags=${tag}&include=musicinfo&audioformat=mp32`
+      );
+      const data = await res.json();
+      if (data.results) {
+        const mapped: Track[] = data.results.map((t: any) => ({
+          id: t.id,
+          name: t.name,
+          artist_name: t.artist_name,
+          album_name: t.album_name,
+          duration: t.duration,
+          audio: t.audio,
+          image: t.album_image || t.image,
+          genre: tag,
+        }));
+        if (featured) setFeaturedTracks(mapped);
+        else setTracks(mapped);
+      }
+    } catch (e) {
+      console.error("Jamendo fetch error:", e);
+    } finally {
+      setLoading(false);
     }
-    return () => clearInterval(interval);
+  };
+
+  // Handle genre switch
+  const switchGenre = (tag: string) => {
+    setActiveGenre(tag);
+    fetchTracks(tag, false);
+  };
+
+  // Audio player logic
+  useEffect(() => {
+    if (!currentTrack) return;
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = currentTrack.audio;
+      audioRef.current.volume = volume;
+      if (playing) audioRef.current.play().catch(() => {});
+    }
+  }, [currentTrack]);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.play().catch(() => {});
+    } else {
+      audioRef.current.pause();
+    }
   }, [playing]);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setProgress(audioRef.current.currentTime);
+      setDuration(audioRef.current.duration || 0);
+    }
+  };
+
+  const handleTrackEnd = () => {
+    const allTracks = [...featuredTracks, ...tracks];
+    const idx = allTracks.findIndex(t => t.id === currentTrack?.id);
+    if (idx < allTracks.length - 1) {
+      setCurrentTrack(allTracks[idx + 1]);
+      setPlaying(true);
+    } else {
+      setPlaying(false);
+    }
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    audioRef.current.currentTime = pct * duration;
+  };
+
+  const playTrack = (track: Track) => {
+    if (currentTrack?.id === track.id) {
+      setPlaying(p => !p);
+    } else {
+      setCurrentTrack(track);
+      setPlaying(true);
+    }
+  };
+
+  const formatTime = (s: number) => {
+    if (!s || isNaN(s)) return "0:00";
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  const skipNext = () => {
+    const allTracks = [...featuredTracks, ...tracks];
+    const idx = allTracks.findIndex(t => t.id === currentTrack?.id);
+    if (idx < allTracks.length - 1) { setCurrentTrack(allTracks[idx + 1]); setPlaying(true); }
+  };
+
+  const skipPrev = () => {
+    const allTracks = [...featuredTracks, ...tracks];
+    const idx = allTracks.findIndex(t => t.id === currentTrack?.id);
+    if (idx > 0) { setCurrentTrack(allTracks[idx - 1]); setPlaying(true); }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     window.location.href = "/";
   };
 
-  const tabs = [
-    { id: "home", label: "Home", icon: "🏠" },
-    { id: "discovery", label: "Discovery", icon: "🔍" },
-    { id: "library", label: "Library", icon: "🎵" },
-    { id: "activity", label: "Activity", icon: "🔔" },
-  ];
+  const displayName = user?.user_metadata?.username || user?.email?.split("@")[0] || "Listener";
 
   return (
     <div style={{
-      background: "#080810",
-      minHeight: "100vh",
+      background: "#080810", minHeight: "100vh",
       fontFamily: "'Sora', system-ui, sans-serif",
-      color: "#e8e8f8",
-      display: "flex",
-      flexDirection: "column",
-      position: "relative",
-      overflow: "hidden",
+      color: "#e8e8f8", display: "flex", flexDirection: "column",
+      position: "relative", overflow: "hidden",
     }}>
+      {/* Hidden audio element */}
+      <audio
+        ref={audioRef}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleTrackEnd}
+        onLoadedMetadata={handleTimeUpdate}
+      />
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
         ::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 2px; }
+        a { text-decoration: none; }
 
-        @keyframes slide-in {
-          from { transform: translateX(-100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes fade-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-        @keyframes waveform {
-          0%, 100% { transform: scaleY(0.3); }
-          50% { transform: scaleY(1); }
-        }
-        @keyframes orb {
-          0%, 100% { transform: translate(0,0); }
-          50% { transform: translate(15px, -15px); }
-        }
+        @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes waveform { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+        @keyframes slide-in { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+        @keyframes orb { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(10px,-10px); } }
 
-        .fade-up { animation: fade-up 0.5s ease forwards; }
+        .fade-up { animation: fade-up 0.4s ease forwards; }
 
-        .space-card {
-          transition: all 0.3s ease;
-          cursor: pointer;
+        .track-row {
+          display: flex; align-items: center; gap: 12px;
+          padding: 10px 12px; border-radius: 14px;
+          cursor: pointer; transition: all 0.2s ease;
+          border: 1px solid transparent;
         }
-        .space-card:hover, .space-card:active {
-          transform: scale(0.98);
-          opacity: 0.9;
+        .track-row:hover { background: #12121e; border-color: #7c3aed22; }
+        .track-row:active { transform: scale(0.98); }
+
+        .genre-chip {
+          border-radius: 99px; padding: 8px 16px;
+          font-size: 13px; font-weight: 600;
+          cursor: pointer; transition: all 0.2s ease;
+          white-space: nowrap; border: 1px solid transparent;
+          font-family: 'Sora', system-ui;
         }
+        .genre-chip:active { transform: scale(0.95); }
 
         .nav-btn {
-          background: none;
-          border: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 3px;
-          padding: 8px 12px;
-          border-radius: 12px;
+          background: none; border: none; cursor: pointer;
+          display: flex; flex-direction: column; align-items: center;
+          gap: 3px; padding: 8px 12px; border-radius: 12px;
+          transition: all 0.2s; text-decoration: none;
         }
         .nav-btn:active { transform: scale(0.9); }
 
-        .sidebar-overlay {
-          position: fixed;
-          inset: 0;
-          background: #00000088;
-          z-index: 40;
-          animation: fade-up 0.2s ease;
+        .play-btn {
+          border: none; border-radius: 50%; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.2s ease; flex-shrink: 0;
         }
+        .play-btn:hover { transform: scale(1.1); }
+        .play-btn:active { transform: scale(0.95); }
+
+        .sidebar-overlay { position: fixed; inset: 0; background: #00000088; z-index: 40; }
         .sidebar {
-          position: fixed;
-          top: 0; left: 0; bottom: 0;
-          width: 280px;
-          background: #0f0f1a;
-          border-right: 1px solid #7c3aed33;
-          z-index: 50;
-          padding: 40px 20px 20px;
+          position: fixed; top: 0; left: 0; bottom: 0; width: 280px;
+          background: #0d0d1a; border-right: 1px solid #7c3aed22;
+          z-index: 50; padding: 48px 20px 20px; overflow-y: auto;
           animation: slide-in 0.3s ease;
-          overflow-y: auto;
         }
 
-        .track-row {
-          transition: all 0.2s ease;
-          cursor: pointer;
-        }
-        .track-row:hover {
-          background: #ffffff08;
-          border-radius: 12px;
-        }
-
-        .mini-player {
-          position: fixed;
-          bottom: 64px;
-          left: 0; right: 0;
-          background: linear-gradient(135deg, #12121e, #1a1a2e);
-          border-top: 1px solid #7c3aed33;
-          border-bottom: 1px solid #ffffff08;
-          padding: 10px 16px;
-          z-index: 30;
-          backdrop-filter: blur(20px);
-        }
-
-        .bottom-nav {
-          position: fixed;
-          bottom: 0; left: 0; right: 0;
-          background: #0a0a14;
-          border-top: 1px solid #ffffff08;
-          padding: 8px 0 12px;
-          z-index: 30;
-          display: flex;
-          justify-content: space-around;
-        }
-
-        .featured-card {
-          transition: all 0.3s ease;
-          cursor: pointer;
-        }
-        .featured-card:active { transform: scale(0.98); }
-
-        .pill {
-          border-radius: 99px;
-          padding: 3px 10px;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
+        .loading-dot {
+          width: 8px; height: 8px; border-radius: 50%;
+          background: #7c3aed; display: inline-block; margin: 0 3px;
         }
       `}</style>
 
-      {/* Background orbs */}
+      {/* Background */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <div style={{
-          position: "absolute", top: "5%", right: "5%",
-          width: 250, height: 250,
-          background: "radial-gradient(circle, #7c3aed22 0%, transparent 70%)",
-          filter: "blur(50px)",
-          animation: "orb 8s ease-in-out infinite",
-        }} />
-        <div style={{
-          position: "absolute", bottom: "20%", left: "5%",
-          width: 200, height: 200,
-          background: "radial-gradient(circle, #00f5d415 0%, transparent 70%)",
-          filter: "blur(40px)",
-          animation: "orb 10s 2s ease-in-out infinite",
-        }} />
+        <div style={{ position: "absolute", top: "5%", right: "5%", width: 250, height: 250, background: "radial-gradient(circle, #7c3aed22 0%, transparent 70%)", filter: "blur(50px)", animation: "orb 8s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", bottom: "20%", left: "5%", width: 200, height: 200, background: "radial-gradient(circle, #00f5d415 0%, transparent 70%)", filter: "blur(40px)", animation: "orb 10s 2s ease-in-out infinite" }} />
       </div>
 
-      {/* Sidebar overlay */}
+      {/* Sidebar */}
       {sidebarOpen && (
         <>
           <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
           <div className="sidebar">
-            {/* Logo */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 32 }}>
-              <div style={{
-                width: 36, height: 36,
-                background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-                borderRadius: 10, display: "flex", alignItems: "center",
-                justifyContent: "center", fontSize: 18,
-              }}>🎵</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 28 }}>
+              <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #7c3aed, #a855f7)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🎵</div>
               <span style={{ fontWeight: 800, fontSize: 18 }}>Wavely<span style={{ color: "#7c3aed" }}>.</span></span>
             </div>
 
-            {/* User info */}
-            <div style={{
-              background: "#7c3aed15", border: "1px solid #7c3aed33",
-              borderRadius: 14, padding: "14px 16px", marginBottom: 24,
-            }}>
-              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>
-                {user?.user_metadata?.username || user?.email?.split("@")[0] || "Listener"}
-              </div>
+            <div style={{ background: "#7c3aed15", border: "1px solid #7c3aed33", borderRadius: 14, padding: "14px 16px", marginBottom: 24 }}>
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>{displayName}</div>
               <div style={{ color: "#6060a0", fontSize: 12 }}>{user?.email}</div>
-              <div style={{ marginTop: 8 }}>
-                <span style={{
-                  background: "#7c3aed22", color: "#a78bfa",
-                  border: "1px solid #7c3aed44",
-                }} className="pill">FREE</span>
-              </div>
             </div>
 
-            {/* Music Channels */}
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase", marginBottom: 12 }}>
-              Music Channels
-            </div>
-            {spaces.map((space) => (
-              <div key={space.id} style={{
+            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase", marginBottom: 12 }}>Music Channels</div>
+            {genres.map((g) => (
+              <div key={g.tag} onClick={() => { switchGenre(g.tag); setSidebarOpen(false); setActiveTab("home"); }} style={{
                 display: "flex", alignItems: "center", gap: 10,
                 padding: "10px 12px", borderRadius: 10, marginBottom: 4,
                 cursor: "pointer", transition: "all 0.2s",
-                background: space.id === 1 ? "#7c3aed22" : "transparent",
-                borderLeft: space.id === 1 ? "3px solid #7c3aed" : "3px solid transparent",
+                background: activeGenre === g.tag ? "#7c3aed22" : "transparent",
+                borderLeft: activeGenre === g.tag ? "3px solid #7c3aed" : "3px solid transparent",
+                color: activeGenre === g.tag ? "#a78bfa" : "#8080a0",
+                fontSize: 13,
               }}>
-                <span style={{ fontSize: 16 }}>{space.emoji}</span>
-                <span style={{ fontSize: 13, color: space.id === 1 ? "#a78bfa" : "#8080a0" }}>
-                  #{space.name.toLowerCase().replace(/\s/g, "-")}
-                </span>
-                {space.live && (
-                  <span style={{
-                    marginLeft: "auto", width: 6, height: 6,
-                    borderRadius: "50%", background: "#10b981",
-                    boxShadow: "0 0 6px #10b981",
-                  }} />
-                )}
+                {g.label}
               </div>
             ))}
 
-            {/* Sign out */}
+            <a href="/profile" style={{ display: "block", marginTop: 24, marginBottom: 12, color: "#8080a0", fontSize: 13, padding: "10px 12px", borderRadius: 10, transition: "all 0.2s" }}>
+              👤 My Profile
+            </a>
+
             <button onClick={handleSignOut} style={{
-              marginTop: 32, width: "100%",
-              background: "#ef444415", border: "1px solid #ef444433",
-              borderRadius: 12, padding: "12px",
-              color: "#ef4444", fontSize: 13, fontWeight: 700,
-              cursor: "pointer", fontFamily: "'Sora', system-ui",
-            }}>
-              Sign Out
-            </button>
+              width: "100%", background: "#ef444415", border: "1px solid #ef444433",
+              borderRadius: 12, padding: "12px", color: "#ef4444",
+              fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'Sora', system-ui",
+            }}>Sign Out</button>
           </div>
         </>
       )}
 
-      {/* Top Header */}
+      {/* Header */}
       <div style={{
         position: "sticky", top: 0, zIndex: 20,
-        background: "#08081088",
-        backdropFilter: "blur(20px)",
-        padding: "14px 16px",
-        display: "flex", alignItems: "center",
-        justifyContent: "space-between",
-        borderBottom: "1px solid #ffffff08",
+        background: "#08081099", backdropFilter: "blur(20px)",
+        padding: "14px 16px", display: "flex", alignItems: "center",
+        justifyContent: "space-between", borderBottom: "1px solid #ffffff08",
       }}>
-        <button onClick={() => setSidebarOpen(true)} style={{
-          background: "none", border: "none", cursor: "pointer",
-          fontSize: 20, color: "#e8e8f8", padding: 4,
-        }}>☰</button>
-
-        <div style={{ fontWeight: 800, fontSize: 18 }}>
-          Wavely<span style={{ color: "#7c3aed" }}>.</span>
-        </div>
-
-        <div style={{
-          width: 34, height: 34,
-          background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-          borderRadius: "50%",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 14, cursor: "pointer",
-        }}>
-          {user?.email?.[0]?.toUpperCase() || "W"}
-        </div>
+        <button onClick={() => setSidebarOpen(true)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#e8e8f8", padding: 4 }}>☰</button>
+        <div style={{ fontWeight: 800, fontSize: 18 }}>Wavely<span style={{ color: "#7c3aed" }}>.</span></div>
+        <a href="/profile" style={{
+          width: 34, height: 34, background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+          borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 14, fontWeight: 800, color: "white",
+        }}>{displayName[0]?.toUpperCase()}</a>
       </div>
 
-      {/* Main Content */}
-      <div style={{
-        flex: 1, overflowY: "auto",
-        padding: "16px 16px 160px",
-        position: "relative", zIndex: 1,
-      }}>
+      {/* Main content */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 180px", position: "relative", zIndex: 1 }}>
 
+        {/* HOME TAB */}
         {activeTab === "home" && (
           <div className="fade-up">
-            {/* Search bar */}
-            <div style={{
-              background: "#12121e",
-              border: "1px solid #ffffff10",
-              borderRadius: 14,
-              padding: "12px 16px",
+            {/* Search shortcut */}
+            <div onClick={() => setActiveTab("search")} style={{
+              background: "#12121e", border: "1px solid #ffffff10",
+              borderRadius: 14, padding: "12px 16px",
               display: "flex", alignItems: "center", gap: 10,
               marginBottom: 24, cursor: "pointer",
+              transition: "all 0.2s",
             }}>
               <span style={{ color: "#4040a0", fontSize: 16 }}>🔍</span>
               <span style={{ color: "#4040a0", fontSize: 14 }}>Search music & spaces...</span>
             </div>
 
-            {/* Featured Live */}
-            <div style={{ marginBottom: 28 }}>
+            {/* Featured track */}
+            {featuredTracks[0] && (
               <div style={{
                 background: "linear-gradient(135deg, #1a0a2e, #0a1a2e)",
-                border: "1px solid #7c3aed33",
-                borderRadius: 20, overflow: "hidden",
-                position: "relative",
-              }} className="featured-card">
-                <div style={{ padding: "20px 20px 16px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                    <span style={{
-                      background: "#7c3aed", color: "white",
-                      fontSize: 9, fontWeight: 800, letterSpacing: 1,
-                      padding: "3px 8px", borderRadius: 4,
-                    }}>FEATURED</span>
-                    <span style={{ color: "#00f5d4", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>
-                      <span style={{
-                        width: 6, height: 6, borderRadius: "50%",
-                        background: "#00f5d4", display: "inline-block",
-                        animation: "pulse 1.5s infinite",
-                      }} />
-                      Live Now
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: -0.5, marginBottom: 4 }}>
-                    Neon Lounge Session
-                  </div>
-                  <div style={{ color: "#8080a0", fontSize: 13, marginBottom: 16 }}>
-                    1,204 listeners vibing right now
-                  </div>
-                  <button style={{
-                    background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-                    border: "none", borderRadius: 99,
-                    padding: "10px 24px",
-                    color: "white", fontSize: 13, fontWeight: 700,
-                    cursor: "pointer", fontFamily: "'Sora', system-ui",
-                    display: "flex", alignItems: "center", gap: 8,
-                  }}>
-                    ▶ Listen Along
-                  </button>
+                border: "1px solid #7c3aed33", borderRadius: 20,
+                padding: 20, marginBottom: 28, position: "relative", overflow: "hidden",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <span style={{ background: "#7c3aed", color: "white", fontSize: 9, fontWeight: 800, letterSpacing: 1, padding: "3px 8px", borderRadius: 4 }}>FEATURED</span>
+                  <span style={{ color: "#00f5d4", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#00f5d4", display: "inline-block", animation: "pulse 1.5s infinite" }} />
+                    Live Now
+                  </span>
                 </div>
-                {/* Decorative waveform */}
-                <div style={{
-                  position: "absolute", right: 16, top: "50%",
-                  transform: "translateY(-50%)",
-                  display: "flex", alignItems: "center", gap: 2, height: 50,
-                }}>
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <div key={i} style={{
-                      width: 3, borderRadius: 2,
-                      background: "#7c3aed66",
-                      height: `${15 + Math.sin(i * 0.8) * 15}px`,
-                      animation: `waveform ${0.5 + (i % 4) * 0.15}s ${i * 0.08}s ease-in-out infinite`,
-                    }} />
+                <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                  <img src={featuredTracks[0].image} alt="" style={{ width: 64, height: 64, borderRadius: 12, objectFit: "cover", flexShrink: 0 }} onError={e => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%237c3aed22'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='24'%3E🎵%3C/text%3E%3C/svg%3E"; }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4, letterSpacing: -0.5 }}>{featuredTracks[0].name}</div>
+                    <div style={{ color: "#8080a0", fontSize: 13, marginBottom: 12 }}>{featuredTracks[0].artist_name}</div>
+                    <button onClick={() => playTrack(featuredTracks[0])} style={{
+                      background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+                      border: "none", borderRadius: 99, padding: "8px 20px",
+                      color: "white", fontSize: 13, fontWeight: 700,
+                      cursor: "pointer", fontFamily: "'Sora', system-ui",
+                      display: "flex", alignItems: "center", gap: 6,
+                    }}>
+                      {currentTrack?.id === featuredTracks[0].id && playing ? "⏸ Pause" : "▶ Play Now"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Genre chips */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase", marginBottom: 14 }}>Browse Genre</div>
+              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
+                {genres.map((g) => (
+                  <button key={g.tag} className="genre-chip" onClick={() => switchGenre(g.tag)} style={{
+                    background: activeGenre === g.tag ? "linear-gradient(135deg, #7c3aed, #a855f7)" : "#12121e",
+                    color: activeGenre === g.tag ? "white" : "#8080a0",
+                    border: `1px solid ${activeGenre === g.tag ? "transparent" : "#ffffff10"}`,
+                    boxShadow: activeGenre === g.tag ? "0 4px 16px #7c3aed44" : "none",
+                  }}>{g.label}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* Track list */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase", marginBottom: 14 }}>
+                Now Playing — {genres.find(g => g.tag === activeGenre)?.label}
+              </div>
+
+              {loading ? (
+                <div style={{ textAlign: "center", padding: "40px 0", color: "#6060a0" }}>
+                  <div style={{ fontSize: 32, marginBottom: 12, animation: "spin 1s linear infinite", display: "inline-block" }}>🎵</div>
+                  <div style={{ fontSize: 14 }}>Loading tracks...</div>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  {tracks.map((track, i) => (
+                    <div key={track.id} className="track-row" onClick={() => playTrack(track)} style={{
+                      background: currentTrack?.id === track.id ? "#7c3aed15" : "transparent",
+                      borderColor: currentTrack?.id === track.id ? "#7c3aed44" : "transparent",
+                    }}>
+                      {/* Album art */}
+                      <div style={{ position: "relative", flexShrink: 0 }}>
+                        <img src={track.image} alt="" style={{ width: 46, height: 46, borderRadius: 10, objectFit: "cover" }} onError={e => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46'%3E%3Crect width='46' height='46' fill='%237c3aed22'/%3E%3Ctext x='23' y='30' text-anchor='middle' font-size='20'%3E🎵%3C/text%3E%3C/svg%3E"; }} />
+                        {currentTrack?.id === track.id && playing && (
+                          <div style={{ position: "absolute", inset: 0, borderRadius: 10, background: "#00000066", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 16 }}>
+                              {[0, 1, 2].map(j => (
+                                <div key={j} style={{ width: 3, borderRadius: 2, background: "#a78bfa", animation: `waveform ${0.5 + j * 0.15}s ${j * 0.1}s ease-in-out infinite`, height: "100%" }} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Track info */}
+                      <div style={{ flex: 1, overflow: "hidden" }}>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: currentTrack?.id === track.id ? "#a78bfa" : "#e8e8f8", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 2 }}>
+                          {track.name}
+                        </div>
+                        <div style={{ color: "#6060a0", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {track.artist_name}
+                        </div>
+                      </div>
+
+                      {/* Duration + play */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                        <span style={{ color: "#4040a0", fontSize: 12 }}>{formatTime(track.duration)}</span>
+                        <button className="play-btn" style={{
+                          width: 32, height: 32,
+                          background: currentTrack?.id === track.id ? "linear-gradient(135deg, #7c3aed, #a855f7)" : "#1a1a28",
+                          boxShadow: currentTrack?.id === track.id ? "0 0 12px #7c3aed66" : "none",
+                        }}>
+                          <span style={{ color: "white", fontSize: 12 }}>
+                            {currentTrack?.id === track.id && playing ? "⏸" : "▶"}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            {/* For You */}
-            <div style={{ marginBottom: 28 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span>✨</span>
-                  <span style={{ fontWeight: 700, fontSize: 18 }}>For You</span>
-                </div>
-                <span style={{ color: "#7c3aed", fontSize: 13, cursor: "pointer" }}>See all →</span>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {forYou.map((item, i) => (
-                  <div key={i} className="featured-card" style={{
-                    background: "#12121e",
-                    border: "1px solid #ffffff08",
-                    borderRadius: 16,
-                    padding: "16px",
-                    display: "flex", alignItems: "center", gap: 14,
-                  }}>
-                    <div style={{
-                      width: 60, height: 60,
-                      background: `${item.color}22`,
-                      border: `1px solid ${item.color}44`,
-                      borderRadius: 12,
-                      display: "flex", alignItems: "center",
-                      justifyContent: "center", fontSize: 24,
-                      flexShrink: 0,
-                    }}>🎵</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ marginBottom: 4 }}>
-                        <span style={{
-                          background: `${item.color}22`,
-                          color: item.color,
-                          fontSize: 9, fontWeight: 800, letterSpacing: 1,
-                          padding: "2px 8px", borderRadius: 4,
-                        }}>{item.genre}</span>
-                      </div>
-                      <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{item.title}</div>
-                      <div style={{ color: "#6060a0", fontSize: 12 }}>
-                        ❤️ {item.likes} · {item.tracks} tracks
-                      </div>
-                    </div>
-                    <div style={{
-                      width: 36, height: 36,
-                      background: "#7c3aed22",
-                      borderRadius: "50%",
-                      display: "flex", alignItems: "center",
-                      justifyContent: "center", fontSize: 14,
-                      cursor: "pointer",
-                    }}>▶</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Live Spaces */}
-            <div style={{ marginBottom: 28 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <span style={{ fontWeight: 700, fontSize: 18 }}>🔴 Live Spaces</span>
-                <span style={{ color: "#7c3aed", fontSize: 13, cursor: "pointer" }}>View all →</span>
-              </div>
-
-              <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
-                {spaces.filter(s => s.live).map((space) => (
-                  <div key={space.id} className="space-card" style={{
-                    background: "#12121e",
-                    border: `1px solid ${space.color}33`,
-                    borderRadius: 16,
-                    padding: "16px 14px",
-                    minWidth: 150,
-                    flexShrink: 0,
-                  }}>
-                    <div style={{
-                      width: 44, height: 44,
-                      background: `${space.color}22`,
-                      borderRadius: 12,
-                      display: "flex", alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 22, marginBottom: 10,
-                    }}>{space.emoji}</div>
-                    <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4, lineHeight: 1.3 }}>
-                      {space.name}
-                    </div>
-                    <div style={{ color: "#6060a0", fontSize: 11, marginBottom: 8 }}>
-                      {space.listeners.toLocaleString()} listening
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                      <span style={{
-                        width: 5, height: 5, borderRadius: "50%",
-                        background: "#10b981",
-                        animation: "pulse 1.5s infinite",
-                        display: "inline-block",
-                      }} />
-                      <span style={{ color: "#10b981", fontSize: 10, fontWeight: 700 }}>LIVE</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent Tracks */}
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 16 }}>🎵 Recent Tracks</div>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                {recentTracks.map((track, i) => (
-                  <div key={i} className="track-row" style={{
-                    display: "flex", alignItems: "center", gap: 12,
-                    padding: "10px 8px",
-                    borderBottom: i < recentTracks.length - 1 ? "1px solid #ffffff08" : "none",
-                  }}
-                    onClick={() => { setCurrentTrack(i); setPlaying(true); }}
-                  >
-                    <div style={{
-                      width: 40, height: 40,
-                      background: "#7c3aed22",
-                      borderRadius: 10,
-                      display: "flex", alignItems: "center",
-                      justifyContent: "center", fontSize: 16,
-                      flexShrink: 0,
-                    }}>
-                      {currentTrack === i && playing ? "▶" : "🎵"}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{track.title}</div>
-                      <div style={{ color: "#6060a0", fontSize: 12 }}>{track.artist}</div>
-                    </div>
-                    <div style={{ color: "#4040a0", fontSize: 12 }}>{track.duration}</div>
-                  </div>
-                ))}
-              </div>
+              )}
             </div>
           </div>
         )}
 
-        {activeTab === "discovery" && (
-          <div className="fade-up">
-            <div style={{ fontWeight: 800, fontSize: 22, marginBottom: 20 }}>🔍 Discovery</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {[
-                { name: "Electronic", sub: "Tech, Bass, House", color: "#7c3aed", emoji: "⚡" },
-                { name: "Synthwave", sub: "Retrowave, Outrun", color: "#0ea5e9", emoji: "🌙" },
-                { name: "Lo-Fi", sub: "Study, Chill, Relax", color: "#10b981", emoji: "📚" },
-                { name: "Jazz & Blues", sub: "Late night vibes", color: "#f59e0b", emoji: "🎷" },
-                { name: "Techno", sub: "Dark, Industrial", color: "#ef4444", emoji: "🔊" },
-                { name: "Ambient", sub: "Focus, Sleep, Calm", color: "#8b5cf6", emoji: "🌊" },
-              ].map((g, i) => (
-                <div key={i} className="space-card" style={{
-                  background: `${g.color}15`,
-                  border: `1px solid ${g.color}33`,
-                  borderRadius: 16, padding: "20px 16px",
-                }}>
-                  <div style={{ fontSize: 28, marginBottom: 8 }}>{g.emoji}</div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: g.color }}>{g.name}</div>
-                  <div style={{ color: "#6060a0", fontSize: 11, marginTop: 2 }}>{g.sub}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* SEARCH TAB */}
+        {activeTab === "search" && (
+          <SearchTab
+            playTrack={playTrack}
+            currentTrack={currentTrack}
+            playing={playing}
+            formatTime={formatTime}
+            JAMENDO_ID={JAMENDO_ID || ""}
+          />
         )}
 
+        {/* LIBRARY TAB */}
         {activeTab === "library" && (
-          <div className="fade-up">
-            <div style={{ fontWeight: 800, fontSize: 22, marginBottom: 20 }}>🎵 Your Library</div>
-            <div style={{
-              background: "#7c3aed15", border: "1px solid #7c3aed33",
-              borderRadius: 16, padding: "20px",
-              textAlign: "center",
-            }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>🎧</div>
-              <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>No playlists yet</div>
-              <div style={{ color: "#6060a0", fontSize: 13, marginBottom: 16 }}>
-                Start saving tracks to build your library
-              </div>
-              <button style={{
-                background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-                border: "none", borderRadius: 99,
-                padding: "10px 24px",
-                color: "white", fontSize: 13, fontWeight: 700,
-                cursor: "pointer", fontFamily: "'Sora', system-ui",
-              }}>+ Create Playlist</button>
-            </div>
+          <div className="fade-up" style={{ textAlign: "center", padding: "60px 20px" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🎵</div>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Your Library</div>
+            <div style={{ color: "#6060a0", fontSize: 14, marginBottom: 24 }}>Save tracks to build your collection</div>
+            <button onClick={() => setActiveTab("search")} style={{
+              background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+              border: "none", borderRadius: 99, padding: "12px 28px",
+              color: "white", fontSize: 14, fontWeight: 700,
+              cursor: "pointer", fontFamily: "'Sora', system-ui",
+            }}>🔍 Find Music</button>
           </div>
         )}
 
+        {/* ACTIVITY TAB */}
         {activeTab === "activity" && (
-          <div className="fade-up">
-            <div style={{ fontWeight: 800, fontSize: 22, marginBottom: 20 }}>🔔 Activity</div>
-            <div style={{
-              background: "#12121e", border: "1px solid #ffffff08",
-              borderRadius: 16, padding: "20px", textAlign: "center",
-            }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>🔔</div>
-              <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>No activity yet</div>
-              <div style={{ color: "#6060a0", fontSize: 13 }}>
-                Join spaces to see what's happening
-              </div>
-            </div>
+          <div className="fade-up" style={{ textAlign: "center", padding: "60px 20px" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🔔</div>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>No Activity Yet</div>
+            <div style={{ color: "#6060a0", fontSize: 14 }}>Join spaces to see what's happening</div>
           </div>
         )}
       </div>
 
       {/* Mini Player */}
-      <div className="mini-player">
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-          <div style={{
-            width: 40, height: 40,
-            background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-            borderRadius: 10,
-            display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: 18, flexShrink: 0,
-          }}>🎵</div>
-          <div style={{ flex: 1, overflow: "hidden" }}>
-            <div style={{ fontWeight: 700, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {recentTracks[currentTrack].title}
-            </div>
-            <div style={{ color: "#6060a0", fontSize: 12 }}>
-              {recentTracks[currentTrack].artist}
-            </div>
+      {currentTrack && (
+        <div style={{
+          position: "fixed", bottom: 64, left: 0, right: 0,
+          background: "linear-gradient(135deg, #12121e, #1a1a2e)",
+          borderTop: "1px solid #7c3aed33",
+          padding: "10px 16px 8px",
+          zIndex: 30, backdropFilter: "blur(20px)",
+        }}>
+          {/* Progress bar */}
+          <div onClick={handleSeek} style={{
+            height: 3, background: "#ffffff10", borderRadius: 2,
+            marginBottom: 10, cursor: "pointer", position: "relative",
+          }}>
+            <div style={{
+              height: "100%", borderRadius: 2,
+              background: "linear-gradient(90deg, #7c3aed, #00f5d4)",
+              width: duration ? `${(progress / duration) * 100}%` : "0%",
+              transition: "width 0.1s linear",
+              boxShadow: "0 0 6px #7c3aed",
+            }} />
           </div>
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <button
-              onClick={() => setPlaying(p => !p)}
-              style={{
-                width: 40, height: 40, borderRadius: "50%",
+
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <img src={currentTrack.image} alt="" style={{ width: 42, height: 42, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} onError={e => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='42' height='42'%3E%3Crect width='42' height='42' fill='%237c3aed22'/%3E%3Ctext x='21' y='27' text-anchor='middle' font-size='18'%3E🎵%3C/text%3E%3C/svg%3E"; }} />
+            <div style={{ flex: 1, overflow: "hidden" }}>
+              <div style={{ fontWeight: 700, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#a78bfa" }}>
+                {currentTrack.name}
+              </div>
+              <div style={{ color: "#6060a0", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {currentTrack.artist_name} · {formatTime(progress)} / {formatTime(duration)}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <button className="play-btn" onClick={skipPrev} style={{ width: 32, height: 32, background: "#1a1a28" }}>
+                <span style={{ color: "#8080a0", fontSize: 14 }}>⏮</span>
+              </button>
+              <button className="play-btn" onClick={() => setPlaying(p => !p)} style={{
+                width: 44, height: 44,
                 background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-                border: "none", fontSize: 16, cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 0 20px #7c3aed66",
               }}>
-              {playing ? "⏸" : "▶"}
-            </button>
-            <button
-              onClick={() => setCurrentTrack(t => (t + 1) % recentTracks.length)}
-              style={{ background: "none", border: "none", color: "#6060a0", fontSize: 18, cursor: "pointer" }}>
-              ⏭
-            </button>
+                <span style={{ color: "white", fontSize: 18 }}>{playing ? "⏸" : "▶"}</span>
+              </button>
+              <button className="play-btn" onClick={skipNext} style={{ width: 32, height: 32, background: "#1a1a28" }}>
+                <span style={{ color: "#8080a0", fontSize: 14 }}>⏭</span>
+              </button>
+            </div>
           </div>
         </div>
-        {/* Progress */}
-        <div style={{ height: 2, background: "#ffffff10", borderRadius: 2 }}>
-          <div style={{
-            height: "100%", borderRadius: 2,
-            background: "linear-gradient(90deg, #7c3aed, #00f5d4)",
-            width: `${progress}%`,
-            transition: "width 0.1s linear",
-          }} />
-        </div>
-      </div>
+      )}
 
       {/* Bottom Nav */}
-      <div className="bottom-nav">
-        {tabs.map((tab) => (
-          <button key={tab.id} className="nav-btn"
-            onClick={() => setActiveTab(tab.id)}
+      <div style={{
+        position: "fixed", bottom: 0, left: 0, right: 0,
+        background: "#09090f", borderTop: "1px solid #ffffff08",
+        padding: "8px 0 12px", zIndex: 30,
+        display: "flex", justifyContent: "space-around",
+      }}>
+        {[
+          { id: "home", icon: "🏠", label: "HOME" },
+          { id: "search", icon: "🔍", label: "SEARCH" },
+          { id: "library", icon: "🎵", label: "LIBRARY" },
+          { id: "activity", icon: "🔔", label: "ACTIVITY" },
+        ].map((tab) => (
+          <button key={tab.id} className="nav-btn" onClick={() => setActiveTab(tab.id)}
             style={{ color: activeTab === tab.id ? "#a78bfa" : "#4040a0" }}
           >
-            <span style={{ fontSize: 20 }}>{tab.icon}</span>
-            <span style={{
-              fontSize: 10, fontWeight: 600,
-              color: activeTab === tab.id ? "#a78bfa" : "#4040a0",
-            }}>{tab.label.toUpperCase()}</span>
+            <span style={{ fontSize: 22 }}>{tab.icon}</span>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 0.5 }}>{tab.label}</span>
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ── SEARCH COMPONENT ──
+function SearchTab({ playTrack, currentTrack, playing, formatTime, JAMENDO_ID }: {
+  playTrack: (t: any) => void;
+  currentTrack: any;
+  playing: boolean;
+  formatTime: (s: number) => string;
+  JAMENDO_ID: string;
+}) {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searched, setSearched] = useState(false);
+
+  const search = async () => {
+    if (!query.trim()) return;
+    setSearching(true);
+    setSearched(true);
+    try {
+      const res = await fetch(
+        `https://api.jamendo.com/v3/tracks/?client_id=${JAMENDO_ID}&format=json&limit=20&search=${encodeURIComponent(query)}&audioformat=mp32`
+      );
+      const data = await res.json();
+      setResults(data.results || []);
+    } catch (e) {
+      setResults([]);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  return (
+    <div className="fade-up">
+      <div style={{ fontWeight: 800, fontSize: 22, letterSpacing: -0.5, marginBottom: 20 }}>🔍 Search Music</div>
+
+      {/* Search input */}
+      <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && search()}
+          placeholder="Search songs, artists..."
+          style={{
+            flex: 1, background: "#12121e",
+            border: "1.5px solid #2a2a3e",
+            borderRadius: 14, padding: "13px 16px",
+            color: "#e8e8f8", fontSize: 15,
+            fontFamily: "'Sora', system-ui", outline: "none",
+            transition: "border-color 0.2s",
+          }}
+          onFocus={e => e.target.style.borderColor = "#7c3aed"}
+          onBlur={e => e.target.style.borderColor = "#2a2a3e"}
+        />
+        <button onClick={search} style={{
+          background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+          border: "none", borderRadius: 14, padding: "0 20px",
+          color: "white", fontSize: 18, cursor: "pointer",
+          fontFamily: "'Sora', system-ui",
+          boxShadow: "0 4px 16px #7c3aed44",
+          transition: "all 0.2s",
+        }}>🔍</button>
+      </div>
+
+      {/* Genre quick search */}
+      {!searched && (
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase", marginBottom: 14 }}>Quick Search</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {["lofi", "jazz", "electronic", "ambient", "synthwave", "classical", "rock", "hiphop"].map(tag => (
+              <button key={tag} onClick={() => { setQuery(tag); }} style={{
+                background: "#12121e", border: "1px solid #2a2a3e",
+                borderRadius: 99, padding: "8px 16px",
+                color: "#8080a0", fontSize: 13, fontWeight: 600,
+                cursor: "pointer", fontFamily: "'Sora', system-ui",
+                transition: "all 0.2s", textTransform: "capitalize",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#7c3aed"; e.currentTarget.style.color = "#a78bfa"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "#2a2a3e"; e.currentTarget.style.color = "#8080a0"; }}
+              >#{tag}</button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Loading */}
+      {searching && (
+        <div style={{ textAlign: "center", padding: "40px 0", color: "#6060a0" }}>
+          <div style={{ fontSize: 32, animation: "spin 1s linear infinite", display: "inline-block", marginBottom: 12 }}>🎵</div>
+          <div>Searching Jamendo...</div>
+        </div>
+      )}
+
+      {/* No results */}
+      {searched && !searching && results.length === 0 && (
+        <div style={{ textAlign: "center", padding: "40px 0" }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>😕</div>
+          <div style={{ color: "#6060a0", fontSize: 14 }}>No tracks found for "{query}"</div>
+        </div>
+      )}
+
+      {/* Results */}
+      {results.length > 0 && (
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase", marginBottom: 14 }}>
+            {results.length} results for "{query}"
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {results.map((track) => (
+              <div key={track.id} className="track-row" onClick={() => playTrack(track)} style={{
+                background: currentTrack?.id === track.id ? "#7c3aed15" : "transparent",
+                border: `1px solid ${currentTrack?.id === track.id ? "#7c3aed44" : "transparent"}`,
+              }}>
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <img src={track.album_image || track.image} alt="" style={{ width: 46, height: 46, borderRadius: 10, objectFit: "cover" }} onError={e => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46'%3E%3Crect width='46' height='46' fill='%237c3aed22'/%3E%3Ctext x='23' y='30' text-anchor='middle' font-size='20'%3E🎵%3C/text%3E%3C/svg%3E"; }} />
+                  {currentTrack?.id === track.id && playing && (
+                    <div style={{ position: "absolute", inset: 0, borderRadius: 10, background: "#00000066", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 16 }}>
+                        {[0, 1, 2].map(j => (
+                          <div key={j} style={{ width: 3, borderRadius: 2, background: "#a78bfa", animation: `waveform ${0.5 + j * 0.15}s ${j * 0.1}s ease-in-out infinite`, height: "100%" }} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div style={{ flex: 1, overflow: "hidden" }}>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: currentTrack?.id === track.id ? "#a78bfa" : "#e8e8f8", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 2 }}>
+                    {track.name}
+                  </div>
+                  <div style={{ color: "#6060a0", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {track.artist_name}
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                  <span style={{ color: "#4040a0", fontSize: 12 }}>{formatTime(track.duration)}</span>
+                  <button className="play-btn" style={{
+                    width: 32, height: 32,
+                    background: currentTrack?.id === track.id ? "linear-gradient(135deg, #7c3aed, #a855f7)" : "#1a1a28",
+                    boxShadow: currentTrack?.id === track.id ? "0 0 12px #7c3aed66" : "none",
+                  }}>
+                    <span style={{ color: "white", fontSize: 12 }}>
+                      {currentTrack?.id === track.id && playing ? "⏸" : "▶"}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
