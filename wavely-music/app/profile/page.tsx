@@ -15,12 +15,16 @@ export default function ProfilePage() {
 
   const showToast = (msg: string) => {
     setToast(msg);
-      setTimeout(() => setToast(null), 2500);
-      };const
+    setTimeout(() => setToast(null), 2500);
+  };
 
+  useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
-      if (!data.user) { window.location.href = "/auth"; return; }
+      if (!data.user) {
+        window.location.href = "/auth";
+        return;
+      }
       setUser(data.user);
 
       const { data: profileData } = await supabase
@@ -65,7 +69,10 @@ export default function ProfilePage() {
     } else {
       setProfile((p: any) => ({ ...p, username, bio }));
       setMessage({ text: "Profile updated! ✅", type: "success" });
-      setTimeout(() => { setEditing(false); setMessage(null); }, 1500);
+      setTimeout(() => {
+        setEditing(false);
+        setMessage(null);
+      }, 1500);
     }
     setSaving(false);
   };
@@ -75,22 +82,36 @@ export default function ProfilePage() {
     window.location.href = "/";
   };
 
-  if (loading) return (
-    <div style={{
-      background: "#080810", minHeight: "100vh",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      fontFamily: "'Sora', system-ui",
-    }}>
-      <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 40, marginBottom: 16, animation: "spin 1s linear infinite" }}>🎵</div>
-        <div style={{ color: "#7c3aed", fontWeight: 700 }}>Loading profile...</div>
+  if (loading) {
+    return (
+      <div style={{
+        background: "#080810",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "'Sora', system-ui",
+      }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 40, marginBottom: 16 }}>🎵</div>
+          <div style={{ color: "#7c3aed", fontWeight: 700 }}>Loading profile...</div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   const displayName = profile?.username || user?.email?.split("@")[0] || "Listener";
   const displayBio = profile?.bio || "Exploring the deepest frequencies of the nocturnal net.";
   const avatarLetter = displayName[0]?.toUpperCase() || "W";
+
+  const settingsItems = [
+    { icon: "👤", label: "Account Settings", desc: "Email, password, security", right: "›", rightColor: "", onClick: () => setEditing(true) },
+    { icon: "🔔", label: "Notifications", desc: "Manage your alerts", right: "›", rightColor: "", onClick: () => showToast("Notifications coming soon! 🔔") },
+    { icon: "🔒", label: "Privacy", desc: "Who can see your activity", right: "›", rightColor: "", onClick: () => showToast("Privacy settings coming soon! 🔒") },
+    { icon: "🎨", label: "Appearance", desc: "Theme and display", right: "›", rightColor: "", onClick: () => showToast("Dark mode only for now 😎") },
+    { icon: "🔗", label: "Discord Link", desc: "Connect your account", right: "Connect", rightColor: "#7c3aed", onClick: () => showToast("Discord linking coming soon! 🔗") },
+    { icon: "⭐", label: "Upgrade to Premium", desc: "No ads · Exclusive spaces", right: "$3.99/mo", rightColor: "#f59e0b", onClick: () => showToast("Premium launching soon! ⭐") },
+  ];
 
   return (
     <div style={{
@@ -108,12 +129,18 @@ export default function ProfilePage() {
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 2px; }
 
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        @keyframes orb { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(10px,-10px); } }
-        @keyframes bar-grow { from { height: 4px; } to { height: var(--h); } }
+        @keyframes fade-up {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes orb {
+          0%, 100% { transform: translate(0,0); }
+          50% { transform: translate(10px,-10px); }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
 
         .fade-up { animation: fade-up 0.4s ease forwards; }
 
@@ -138,9 +165,12 @@ export default function ProfilePage() {
         .btn-save {
           width: 100%;
           background: linear-gradient(135deg, #7c3aed, #a855f7);
-          border: none; border-radius: 14px;
-          padding: 15px; color: white;
-          font-size: 15px; font-weight: 700;
+          border: none;
+          border-radius: 14px;
+          padding: 15px;
+          color: white;
+          font-size: 15px;
+          font-weight: 700;
           font-family: 'Sora', system-ui;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -207,7 +237,7 @@ export default function ProfilePage() {
           font-family: 'Sora', system-ui;
           transition: all 0.2s;
         }
-        .edit-btn:hover { background: #7c3aed33; transform: scale(1.03); }
+        .edit-btn:hover { background: #7c3aed33; }
 
         .cancel-btn {
           background: #ef444415;
@@ -237,25 +267,57 @@ export default function ProfilePage() {
           transition: all 0.2s;
         }
         .signout-btn:hover { background: #ef444415; border-color: #ef444455; }
+
+        .share-btn {
+          flex: 1;
+          background: #1a1a28;
+          border: 1px solid #2a2a3e;
+          border-radius: 12px;
+          padding: 10px;
+          color: #a0a0c0;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: 'Sora', system-ui;
+          transition: all 0.2s;
+        }
+        .share-btn:hover { background: #1e1e2e; border-color: #7c3aed44; }
+
+        .premium-btn {
+          flex: 1;
+          background: linear-gradient(135deg, #7c3aed22, #a855f722);
+          border: 1px solid #7c3aed44;
+          border-radius: 12px;
+          padding: 10px;
+          color: #a78bfa;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          font-family: 'Sora', system-ui;
+          transition: all 0.2s;
+        }
+        .premium-btn:hover { background: linear-gradient(135deg, #7c3aed33, #a855f733); }
       `}</style>
 
-      {/* Fixed background orbs */}
+      {/* Background orbs */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
         <div style={{
           position: "absolute", top: "8%", right: "8%",
           width: 220, height: 220,
           background: "radial-gradient(circle, #7c3aed22 0%, transparent 70%)",
-          filter: "blur(40px)", animation: "orb 8s ease-in-out infinite",
+          filter: "blur(40px)",
+          animation: "orb 8s ease-in-out infinite",
         }} />
         <div style={{
           position: "absolute", bottom: "25%", left: "5%",
           width: 180, height: 180,
           background: "radial-gradient(circle, #00f5d415 0%, transparent 70%)",
-          filter: "blur(35px)", animation: "orb 11s 2s ease-in-out infinite",
+          filter: "blur(35px)",
+          animation: "orb 11s 2s ease-in-out infinite",
         }} />
       </div>
 
-      {/* ── HEADER ── */}
+      {/* HEADER */}
       <div style={{
         position: "sticky", top: 0, zIndex: 50,
         background: "#08081099",
@@ -272,7 +334,6 @@ export default function ProfilePage() {
           borderRadius: 10,
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 16, color: "#a78bfa", textDecoration: "none",
-          transition: "all 0.2s",
         }}>←</a>
 
         <span style={{ fontWeight: 800, fontSize: 17, letterSpacing: -0.3 }}>My Profile</span>
@@ -290,19 +351,17 @@ export default function ProfilePage() {
 
       <div style={{ position: "relative", zIndex: 1 }}>
 
-        {/* ── PROFILE HERO ── */}
+        {/* PROFILE HERO */}
         <div style={{
           background: "linear-gradient(160deg, #1a0a2e 0%, #0a0e1e 50%, #080810 100%)",
           padding: "32px 20px 28px",
           position: "relative", overflow: "hidden",
         }}>
-          {/* decorative circles */}
           <div style={{ position: "absolute", top: -30, right: -30, width: 140, height: 140, borderRadius: "50%", border: "1px solid #7c3aed22" }} />
           <div style={{ position: "absolute", top: 20, right: 20, width: 80, height: 80, borderRadius: "50%", border: "1px solid #7c3aed15" }} />
 
-          {/* Avatar + info row */}
+          {/* Avatar row */}
           <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 20 }}>
-            {/* Avatar */}
             <div style={{ position: "relative", flexShrink: 0 }}>
               <div style={{
                 width: 76, height: 76,
@@ -321,7 +380,6 @@ export default function ProfilePage() {
                   {avatarLetter}
                 </div>
               </div>
-              {/* Online dot */}
               <div style={{
                 position: "absolute", bottom: 2, right: 2,
                 width: 14, height: 14, borderRadius: "50%",
@@ -331,7 +389,6 @@ export default function ProfilePage() {
               }} />
             </div>
 
-            {/* Name + badge */}
             <div style={{ flex: 1, paddingTop: 4 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
                 <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>
@@ -360,7 +417,7 @@ export default function ProfilePage() {
               background: "#0f0f1a",
               border: "1px solid #2a2a3e",
               borderRadius: 18, padding: 18,
-              marginBottom: 4,
+              marginBottom: 16,
             }}>
               <div style={{ marginBottom: 14 }}>
                 <label style={{ color: "#6060a0", fontSize: 11, fontWeight: 700, letterSpacing: 1, display: "block", marginBottom: 8, textTransform: "uppercase" }}>
@@ -401,29 +458,14 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Share + upgrade row */}
+          {/* Share + Premium buttons */}
           {!editing && (
             <div style={{ display: "flex", gap: 10 }}>
-              <button style={{
-                flex: 1,
-                background: "#1a1a28", border: "1px solid #2a2a3e",
-                borderRadius: 12, padding: "10px",
-                color: "#a0a0c0", fontSize: 13, fontWeight: 600,
-                cursor: "pointer", fontFamily: "'Sora', system-ui",
-                transition: "all 0.2s",
-              }}>
+              <button className="share-btn" onClick={() => showToast("Share link copied! 🔗")}>
                 🔗 Share Profile
               </button>
               {!profile?.is_premium && (
-                <button style={{
-                  flex: 1,
-                  background: "linear-gradient(135deg, #7c3aed22, #a855f722)",
-                  border: "1px solid #7c3aed44",
-                  borderRadius: 12, padding: "10px",
-                  color: "#a78bfa", fontSize: 13, fontWeight: 700,
-                  cursor: "pointer", fontFamily: "'Sora', system-ui",
-                  transition: "all 0.2s",
-                }}>
+                <button className="premium-btn" onClick={() => showToast("Premium launching soon! ⭐")}>
                   ⭐ Go Premium
                 </button>
               )}
@@ -433,7 +475,7 @@ export default function ProfilePage() {
 
         <div style={{ padding: "20px 16px" }}>
 
-          {/* ── STATS ── */}
+          {/* STATS */}
           <div style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase", marginBottom: 14 }}>
               Your Stats
@@ -462,7 +504,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* ── WEEKLY ACTIVITY ── */}
+          {/* WEEKLY ACTIVITY */}
           <div style={{
             background: "#111118", border: "1px solid #1e1e2e",
             borderRadius: 18, padding: "18px 16px", marginBottom: 20,
@@ -478,9 +520,7 @@ export default function ProfilePage() {
                 <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
                   <div style={{
                     width: "100%", borderRadius: 6,
-                    background: i === 5
-                      ? "linear-gradient(to top, #7c3aed, #a855f7)"
-                      : "#1e1e2e",
+                    background: i === 5 ? "linear-gradient(to top, #7c3aed, #a855f7)" : "#1e1e2e",
                     height: `${b.h}%`,
                     border: i === 5 ? "none" : "1px solid #2a2a3a",
                     boxShadow: i === 5 ? "0 0 12px #7c3aed66" : "none",
@@ -491,7 +531,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* ── VIBE TAGS ── */}
+          {/* VIBE TAGS */}
           <div style={{
             background: "#111118", border: "1px solid #1e1e2e",
             borderRadius: 18, padding: "18px 16px", marginBottom: 20,
@@ -507,7 +547,7 @@ export default function ProfilePage() {
                   color: i === 0 ? "#a78bfa" : "#6060a0",
                 }}>{tag}</span>
               ))}
-              <span className="tag-pill" style={{
+              <span className="tag-pill" onClick={() => showToast("Custom tags coming soon! 🏷️")} style={{
                 background: "transparent",
                 border: "1.5px dashed #7c3aed44",
                 color: "#7c3aed",
@@ -515,7 +555,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* ── SETTINGS ── */}
+          {/* SETTINGS */}
           <div style={{
             background: "#111118", border: "1px solid #1e1e2e",
             borderRadius: 18, overflow: "hidden", marginBottom: 20,
@@ -523,14 +563,7 @@ export default function ProfilePage() {
             <div style={{ padding: "14px 16px", borderBottom: "1px solid #1a1a28" }}>
               <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: "#4040a0", textTransform: "uppercase" }}>Settings</div>
             </div>
-            {[
-              { icon: "👤", label: "Account Settings", desc: "Email, password, security", right: "›", onClick: () => setEditing(true) },
-              { icon: "🔔", label: "Notifications", desc: "Manage your alerts", right: "›", onClick: () => showToast("Notifications coming soon! 🔔") },
-              { icon: "🔒", label: "Privacy", desc: "Who can see your activity", right: "›", onClick: () => showToast("Privacy settings coming soon! 🔒") },
-              { icon: "🎨", label: "Appearance", desc: "Theme and display", right: "›", onClick: () => showToast("Dark mode only for now 😎") },
-              { icon: "🔗", label: "Discord Link", desc: "Connect your account", right: "Connect", rightColor: "#7c3aed", onClick: () => showToast("Discord linking coming soon! 🔗") },
-              { icon: "⭐", label: "Upgrade to Premium", desc: "No ads · Exclusive spaces", right: "$3.99/mo", rightColor: "#f59e0b", onClick: () => showToast("Premium launching soon! ⭐") },
-            ].map((item, i) => (
+            {settingsItems.map((item, i) => (
               <div key={i} className="settings-row" onClick={item.onClick}>
                 <div style={{
                   width: 38, height: 38, borderRadius: 11,
@@ -555,7 +588,7 @@ export default function ProfilePage() {
             ))}
           </div>
 
-          {/* ── SIGN OUT ── */}
+          {/* SIGN OUT */}
           <button className="signout-btn" onClick={handleSignOut}>
             Sign Out
           </button>
@@ -566,7 +599,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Toast notification */}
+      {/* TOAST */}
       {toast && (
         <div style={{
           position: "fixed",
@@ -588,8 +621,8 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* ── BOTTOM NAV ── */}
-       <div style={{
+      {/* BOTTOM NAV */}
+      <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0,
         background: "#09090f",
         borderTop: "1px solid #ffffff08",
