@@ -18,7 +18,6 @@ export default function ProfilePage() {
       setTimeout(() => setToast(null), 2500);
       };const
 
-  useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/auth"; return; }
