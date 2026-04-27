@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("query") || "lofi";
-  const limit = searchParams.get("limit") || "15";
+  const limit = searchParams.get("limit") || "100";
 
   try {
-    const url = `https://api.deezer.com/search?q=${encodeURIComponent(query)}&limit=${limit}`;
+    const url = `https://api.deezer.com/search?q=${encodeURIComponent(query)}&limit=${limit}&index=0`;
     const res = await fetch(url);
     const data = await res.json();
 
