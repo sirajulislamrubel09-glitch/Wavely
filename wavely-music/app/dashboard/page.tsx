@@ -400,33 +400,137 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Mini Player */}
-      {currentTrack && (
-      onClick={() => window.location.href = "/player"}
-        <div style={{ position: "fixed", bottom: 64, left: 0, right: 0, background: "linear-gradient(135deg, #12121e, #1a1a2e)", borderTop: "1px solid #7c3aed33", padding: "10px 16px 8px", zIndex: 30, backdropFilter: "blur(20px)" }}>
-          <div onClick={handleSeek} style={{ height: 3, background: "#ffffff10", borderRadius: 2, marginBottom: 10, cursor: "pointer" }}>
-            <div style={{ height: "100%", borderRadius: 2, background: "linear-gradient(90deg, #7c3aed, #00f5d4)", width: duration ? `${(progress / duration) * 100}%` : "0%", transition: "width 0.1s linear", boxShadow: "0 0 6px #7c3aed" }} />
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <img src={currentTrack.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }} style={{ width: 42, height: 42, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
-            <div style={{ flex: 1, overflow: "hidden" }}>
-              <div style={{ fontWeight: 700, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#a78bfa" }}>{currentTrack.name}</div>
-              <div style={{ color: "#6060a0", fontSize: 12 }}>{currentTrack.artist_name} · {formatTime(progress)} / {formatTime(duration)}</div>
-            </div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <button className="play-btn" onClick={skipPrev} style={{ width: 32, height: 32, background: "#1a1a28" }}>
-                <span style={{ color: "#8080a0", fontSize: 14 }}>⏮</span>
-              </button>
-              <button className="play-btn" onClick={() => setPlaying(p => !p)} style={{ width: 44, height: 44, background: "linear-gradient(135deg, #7c3aed, #a855f7)", boxShadow: "0 0 20px #7c3aed66" }}>
-                <span style={{ color: "white", fontSize: 18 }}>{playing ? "⏸" : "▶"}</span>
-              </button>
-              <button className="play-btn" onClick={skipNext} style={{ width: 32, height: 32, background: "#1a1a28" }}>
-                <span style={{ color: "#8080a0", fontSize: 14 }}>⏭</span>
-              </button>
-            </div>
-          </div>
+{/* Mini Player */}
+{currentTrack && (
+  <div
+    onClick={() => (window.location.href = "/player")}
+    style={{
+      position: "fixed",
+      bottom: 64,
+      left: 0,
+      right: 0,
+      background: "linear-gradient(135deg, #12121e, #1a1a2e)",
+      borderTop: "1px solid #7c3aed33",
+      padding: "10px 16px 8px",
+      zIndex: 30,
+      backdropFilter: "blur(20px)",
+      cursor: "pointer",
+    }}
+  >
+    {/* Progress Bar */}
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        handleSeek(e);
+      }}
+      style={{
+        height: 3,
+        background: "#ffffff10",
+        borderRadius: 2,
+        marginBottom: 10,
+        cursor: "pointer",
+      }}
+    >
+      <div
+        style={{
+          height: "100%",
+          borderRadius: 2,
+          background: "linear-gradient(90deg, #7c3aed, #00f5d4)",
+          width: duration ? `${(progress / duration) * 100}%` : "0%",
+          transition: "width 0.1s linear",
+          boxShadow: "0 0 6px #7c3aed",
+        }}
+      />
+    </div>
+
+    {/* Content */}
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      
+      {/* Image */}
+      <img
+        src={currentTrack.image || imgFallback}
+        alt=""
+        onError={(e) => {
+          e.target.src = imgFallback;
+        }}
+        style={{
+          width: 42,
+          height: 42,
+          borderRadius: 10,
+          objectFit: "cover",
+          flexShrink: 0,
+        }}
+      />
+
+      {/* Track Info */}
+      <div style={{ flex: 1, overflow: "hidden" }}>
+        <div
+          style={{
+            fontWeight: 700,
+            fontSize: 14,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            color: "#a78bfa",
+          }}
+        >
+          {currentTrack.name}
         </div>
-      )}
+        <div style={{ color: "#6060a0", fontSize: 12 }}>
+          {currentTrack.artist_name} · {formatTime(progress)} / {formatTime(duration)}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        
+        {/* Prev */}
+        <button
+          className="play-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            skipPrev();
+          }}
+          style={{ width: 32, height: 32, background: "#1a1a28" }}
+        >
+          <span style={{ color: "#8080a0", fontSize: 14 }}>⏮</span>
+        </button>
+
+        {/* Play / Pause */}
+        <button
+          className="play-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            setPlaying((p) => !p);
+          }}
+          style={{
+            width: 44,
+            height: 44,
+            background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+            boxShadow: "0 0 20px #7c3aed66",
+          }}
+        >
+          <span style={{ color: "white", fontSize: 18 }}>
+            {playing ? "⏸" : "▶"}
+          </span>
+        </button>
+
+        {/* Next */}
+        <button
+          className="play-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            skipNext();
+          }}
+          style={{ width: 32, height: 32, background: "#1a1a28" }}
+        >
+          <span style={{ color: "#8080a0", fontSize: 14 }}>⏭</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Bottom Nav */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#09090f", borderTop: "1px solid #ffffff08", padding: "8px 0 12px", zIndex: 30, display: "flex", justifyContent: "space-around" }}>
