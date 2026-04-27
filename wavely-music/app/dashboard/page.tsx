@@ -16,7 +16,7 @@ interface Track {
 
 const genres = [
   { label: "🌙 Lo-Fi", tag: "lofi" },
-  { label: "⚡ Electronic", tag: "electronic" },
+  { label: "⚡ Bollywood", tag: "bollywood" },
   { label: "🎷 Jazz", tag: "jazz" },
   { label: "🌊 Ambient", tag: "ambient" },
   { label: "🔊 Techno", tag: "techno" },
