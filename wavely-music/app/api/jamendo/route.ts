@@ -2,15 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const endpoint = searchParams.get("endpoint") || "tracks";
-  const params = searchParams.get("params") || "";
-  const clientId = process.env.NEXT_PUBLIC_JAMENDO_CLIENT_ID;
-  const url = `https://api.jamendo.com/v3/${endpoint}/?client_id=${clientId}&format=json&${params}`;
+  const query = searchParams.get("query") || "lofi";
+  const limit = searchParams.get("limit") || "100";
+
   try {
+    const url = `https://api.deezer.com/search?q=${encodeURIComponent(query)}&limit=${limit}&index=0`;
     const res = await fetch(url);
     const data = await res.json();
-    return NextResponse.json(data);
+
+    const results = data.data
+      ?.filter((t: any) => t.preview)
+      .map((t: any) => ({
+        id: t.id?.toString(),
+        name: t.title,
+        artist_name: t.artist?.name,
+        album_name: t.album?.title,
+        duration: t.duration,
+        audio: t.preview,
+        image: t.album?.cover_big || t.album?.cover_medium,
+      })) || [];
+
+    return NextResponse.json({ results });
   } catch (e) {
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
+    return NextResponse.json({ results: [] });
   }
 }
