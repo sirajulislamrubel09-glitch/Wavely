@@ -98,13 +98,15 @@ export default function Dashboard() {
   }, [playing]);
 
   const playTrack = (track: Track) => {
-    if (currentTrack?.id === track.id) {
-      setPlaying(p => !p);
-    } else {
-      setCurrentTrack(track);
-      setPlaying(true);
-    }
-  };
+  localStorage.setItem("wavely_current_track", JSON.stringify(track));
+  window.dispatchEvent(new Event("wavely_track_change"));
+  if (currentTrack?.id === track.id) {
+    setPlaying(p => !p);
+  } else {
+    setCurrentTrack(track);
+    setPlaying(true);
+  }
+};
 
   const skipNext = () => {
     const all = featuredTrack ? [featuredTrack, ...tracks] : tracks;
@@ -400,6 +402,7 @@ export default function Dashboard() {
 
       {/* Mini Player */}
       {currentTrack && (
+      onClick={() => window.location.href = "/player"}
         <div style={{ position: "fixed", bottom: 64, left: 0, right: 0, background: "linear-gradient(135deg, #12121e, #1a1a2e)", borderTop: "1px solid #7c3aed33", padding: "10px 16px 8px", zIndex: 30, backdropFilter: "blur(20px)" }}>
           <div onClick={handleSeek} style={{ height: 3, background: "#ffffff10", borderRadius: 2, marginBottom: 10, cursor: "pointer" }}>
             <div style={{ height: "100%", borderRadius: 2, background: "linear-gradient(90deg, #7c3aed, #00f5d4)", width: duration ? `${(progress / duration) * 100}%` : "0%", transition: "width 0.1s linear", boxShadow: "0 0 6px #7c3aed" }} />
