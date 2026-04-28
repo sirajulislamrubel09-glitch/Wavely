@@ -1,26 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const SAAVN_API = "https://jiosaavn-api-qefh.onrender.com";
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const query = searchParams.get("query") || "lofi";
-  const limit = searchParams.get("limit") || "100";
+  const query = searchParams.get("query") || "arijit singh";
+  const limit = searchParams.get("limit") || "20";
 
   try {
-    const url = `https://api.deezer.com/search?q=${encodeURIComponent(query)}&limit=${limit}&index=0`;
-    const res = await fetch(url);
+    const res = await fetch(
+      `${SAAVN_API}/api/search/songs?query=${encodeURIComponent(query)}&limit=${limit}`
+    );
     const data = await res.json();
 
-    const results = data.data
-      ?.filter((t: any) => t.preview)
-      .map((t: any) => ({
-        id: t.id?.toString(),
-        name: t.title,
-        artist_name: t.artist?.name,
-        album_name: t.album?.title,
-        duration: t.duration,
-        audio: t.preview,
-        image: t.album?.cover_big || t.album?.cover_medium,
-      })) || [];
+    const songs = data?.data?.results || [];
+    const results = songs.map((s: any) => ({
+      id: s.id,
+      name: s.name,
+      artist_name: s.artists?.primary?.[0]?.name || "Unknown",
+      album_name: s.album?.name || "",
+      duration: s.duration,
+      audio: s.downloadUrl?.[2]?.url || s.downloadUrl?.[1]?.url || s.downloadUrl?.[0]?.url || "",
+      image: s.image?.[2]?.url || s.image?.[1]?.url || s.image?.[0]?.url || "",
+    })).filter((s: any) => s.audio);
 
     return NextResponse.json({ results });
   } catch (e) {
