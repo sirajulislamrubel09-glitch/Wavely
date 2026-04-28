@@ -225,11 +225,25 @@ export default function Dashboard() {
     setTracks([]);
     setFeaturedTrack(null);
     try {
-      const res = await fetch(`/api/jamendo?query=${encodeURIComponent(tag)}&limit=30`);
+      const res = await fetch(
+        `https://jiosaavn-api-qefh.onrender.com/api/search/songs?query=${encodeURIComponent(tag)}&limit=30`
+      );
       const data = await res.json();
-      if (data.results?.length > 0) {
-        setFeaturedTrack(data.results[0]);
-        setTracks(data.results.slice(1));
+
+      const songs = data?.data?.results || [];
+      const results = songs.map((s: any) => ({
+        id: s.id,
+        name: s.name,
+        artist_name: s.artists?.primary?.[0]?.name || "Unknown",
+        album_name: s.album?.name || "",
+        duration: s.duration,
+        audio: s.downloadUrl?.[2]?.url || s.downloadUrl?.[1]?.url || s.downloadUrl?.[0]?.url || "",
+        image: s.image?.[2]?.url || s.image?.[1]?.url || s.image?.[0]?.url || "",
+      })).filter((s: any) => s.audio);
+
+      if (results?.length > 0) {
+        setFeaturedTrack(results[0]);
+        setTracks(results.slice(1));
       } else {
         showToast("No tracks found 😕");
       }
@@ -974,9 +988,23 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
     if (!sq.trim()) return;
     setSearching(true); setSearched(true);
     try {
-      const res = await fetch(`/api/jamendo?query=${encodeURIComponent(sq)}&limit=25`);
+      const res = await fetch(
+        `https://jiosaavn-api-qefh.onrender.com/api/search/songs?query=${encodeURIComponent(sq)}&limit=25`
+      );
       const data = await res.json();
-      setResults(data.results || []);
+
+      const songs = data?.data?.results || [];
+      const results = songs.map((s: any) => ({
+        id: s.id,
+        name: s.name,
+        artist_name: s.artists?.primary?.[0]?.name || "Unknown",
+        album_name: s.album?.name || "",
+        duration: s.duration,
+        audio: s.downloadUrl?.[2]?.url || s.downloadUrl?.[1]?.url || s.downloadUrl?.[0]?.url || "",
+        image: s.image?.[2]?.url || s.image?.[1]?.url || s.image?.[0]?.url || "",
+      })).filter((s: any) => s.audio);
+
+      setResults(results);
     } catch { setResults([]); }
     finally { setSearching(false); }
   };
@@ -990,10 +1018,10 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
         <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && search()}
           placeholder="Artists, songs, albums..."
           style={{ flex: 1, background: "#282828", border: "2px solid transparent", borderRadius: 8, padding: "12px 16px", color: "#fff", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border-color 0.2s" }}
-          onFocus={e => e.target.style.borderColor = "#4b0082"}
+          onFocus={e => e.target.style.borderColor = "#ba55d3"}
           onBlur={e => e.target.style.borderColor = "transparent"}
         />
-        <button onClick={() => search()} style={{ background: "#4b0082", border: "none", borderRadius: 8, padding: "0 18px", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: 16 }}>→</button>
+        <button onClick={() => search()} style={{ background: "#ba55d3", border: "none", borderRadius: 8, padding: "0 18px", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: 16 }}>→</button>
       </div>
 
       {!searched && (
