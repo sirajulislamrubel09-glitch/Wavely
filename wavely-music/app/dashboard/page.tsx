@@ -33,7 +33,7 @@ const Icons = {
   shuffle: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>,
   repeat: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
   heart: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
-  heartFill: <svg width="16" height="16" viewBox="0 0 24 24" fill="#1db954" stroke="#1db954" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+  heartFill: <svg width="16" height="16" viewBox="0 0 24 24" fill="#4b0082" stroke="#4b0082" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
   volume: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>,
   dots: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>,
   share: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
@@ -303,7 +303,7 @@ export default function Dashboard() {
           <div style={{ position: "absolute", inset: 0, borderRadius: 6, background: "#00000088", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 14 }}>
               {[0, 1, 2].map(j => (
-                <div key={j} style={{ width: 3, borderRadius: 2, background: "#1db954", height: "100%",
+                <div key={j} style={{ width: 3, borderRadius: 2, background: "#4b0082", height: "100%",
                   animation: `waveAnim ${0.5 + j * 0.15}s ${j * 0.1}s ease-in-out infinite` }} />
               ))}
             </div>
@@ -313,7 +313,7 @@ export default function Dashboard() {
 
       {/* Info */}
       <div style={{ flex: 1, overflow: "hidden" }}>
-        <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#1db954" : "#fff",
+        <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#4b0082" : "#fff",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 2 }}>{track.name}</div>
         <div style={{ color: "#b3b3b3", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {track.artist_name}
@@ -322,7 +322,7 @@ export default function Dashboard() {
 
       {/* Actions */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-        <button onClick={() => toggleLike(track.id)} style={{ background: "none", border: "none", cursor: "pointer", color: liked.has(track.id) ? "#1db954" : "#b3b3b3", display: "flex", padding: 4, transition: "color 0.2s" }}>
+        <button onClick={() => toggleLike(track.id)} style={{ background: "none", border: "none", cursor: "pointer", color: liked.has(track.id) ? "#4b0082" : "#b3b3b3", display: "flex", padding: 4, transition: "color 0.2s" }}>
           {liked.has(track.id) ? Icons.heartFill : Icons.heart}
         </button>
         <span style={{ color: "#b3b3b3", fontSize: 12 }}>{formatTime(track.duration)}</span>
@@ -362,7 +362,7 @@ export default function Dashboard() {
 
         .btn-icon { background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:8px; border-radius:50%; transition:all 0.15s; color:#b3b3b3; }
         .btn-icon:hover { color:#fff; background:#ffffff12; }
-        .btn-icon.active { color:#1db954; }
+        .btn-icon.active { color:#4b0082; }
 
         .genre-pill { border:none; border-radius:99px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; white-space:nowrap; font-family:'DM Sans',system-ui; }
         .genre-pill:hover { transform:scale(1.04); }
@@ -390,7 +390,7 @@ export default function Dashboard() {
             {/* Logo */}
             <div style={{ padding: "20px 16px 12px", borderBottom: "1px solid #282828" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 36, height: 36, background: "#1db954", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 36, height: 36, background: "#4b0082", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   {Icons.music}
                 </div>
                 <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: -0.3 }}>Wavely</span>
@@ -427,7 +427,7 @@ export default function Dashboard() {
 
               {/* Liked Songs */}
               <div className="playlist-item" onClick={() => { setActiveTab("liked"); setSidebarOpen(false); }}>
-                <div style={{ width: 36, height: 36, borderRadius: 6, background: "linear-gradient(135deg, #4b0082, #1db954)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 6, background: "linear-gradient(135deg, #4b0082, #800080)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {Icons.heartFill}
                 </div>
                 <div style={{ flex: 1, overflow: "hidden" }}>
@@ -489,7 +489,7 @@ export default function Dashboard() {
             />
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={() => setShowNewPlaylist(false)} style={{ flex: 1, background: "none", border: "1px solid #535353", borderRadius: 99, padding: "10px", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancel</button>
-              <button onClick={createPlaylist} style={{ flex: 1, background: "#1db954", border: "none", borderRadius: 99, padding: "10px", color: "#000", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create</button>
+              <button onClick={createPlaylist} style={{ flex: 1, background: "#4b0082", border: "none", borderRadius: 99, padding: "10px", color: "#000", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create</button>
             </div>
           </div>
         </>
@@ -505,7 +505,7 @@ export default function Dashboard() {
             {playlists.length === 0 ? (
               <div style={{ textAlign: "center", padding: "20px 0", color: "#535353" }}>
                 <p style={{ marginBottom: 12 }}>No playlists yet!</p>
-                <button onClick={() => { setShowAddToPlaylist(null); setShowNewPlaylist(true); }} style={{ background: "#1db954", border: "none", borderRadius: 99, padding: "10px 20px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create Playlist</button>
+                <button onClick={() => { setShowAddToPlaylist(null); setShowNewPlaylist(true); }} style={{ background: "#4b0082", border: "none", borderRadius: 99, padding: "10px 20px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create Playlist</button>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 240, overflowY: "auto" }}>
@@ -551,14 +551,14 @@ export default function Dashboard() {
                 <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 4, letterSpacing: -0.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentTrack.name}</div>
                 <div style={{ color: "#b3b3b3", fontSize: 14 }}>{currentTrack.artist_name}</div>
               </div>
-              <button onClick={() => toggleLike(currentTrack.id)} className="btn-icon" style={{ color: liked.has(currentTrack.id) ? "#1db954" : "#b3b3b3" }}>
+              <button onClick={() => toggleLike(currentTrack.id)} className="btn-icon" style={{ color: liked.has(currentTrack.id) ? "#4b0082" : "#b3b3b3" }}>
                 {liked.has(currentTrack.id) ? Icons.heartFill : Icons.heart}
               </button>
             </div>
 
             {/* Progress */}
             <div onClick={handleSeek} style={{ height: 4, background: "#535353", borderRadius: 2, marginBottom: 8, cursor: "pointer" }}>
-              <div style={{ height: "100%", background: "#1db954", borderRadius: 2, width: `${progressPct}%`, transition: "width 0.1s" }} />
+              <div style={{ height: "100%", background: "#4b0082", borderRadius: 2, width: `${progressPct}%`, transition: "width 0.1s" }} />
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", color: "#b3b3b3", fontSize: 11, marginBottom: 20 }}>
               <span>{formatTime(progress)}</span>
@@ -589,7 +589,7 @@ export default function Dashboard() {
               <span style={{ color: "#b3b3b3" }}>{Icons.volume}</span>
               <input type="range" min={0} max={1} step={0.01} value={volume}
                 onChange={e => { const v = parseFloat(e.target.value); setVolume(v); if (audioRef.current) audioRef.current.volume = v; }}
-                style={{ flex: 1, accentColor: "#1db954" }}
+                style={{ flex: 1, accentColor: "#4b0082" }}
               />
             </div>
 
@@ -634,7 +634,7 @@ export default function Dashboard() {
             <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 20, scrollbarWidth: "none" }}>
               {GENRES.map((g, i) => (
                 <button key={i} className="genre-pill" onClick={() => switchGenre(i)} style={{
-                  background: activeGenre === i ? "#1db954" : "#282828",
+                  background: activeGenre === i ? "#4b0082" : "#282828",
                   color: activeGenre === i ? "#000" : "#fff",
                   flexShrink: 0,
                 }}>{g.label}</button>
@@ -656,11 +656,11 @@ export default function Dashboard() {
                   <img src={featuredTrack.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }}
                     style={{ width: 80, height: 80, borderRadius: 8, objectFit: "cover", flexShrink: 0, boxShadow: "0 8px 24px #00000066" }} />
                   <div style={{ flex: 1, overflow: "hidden" }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Featured Track</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#4b0082", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Featured Track</div>
                     <div style={{ fontWeight: 700, fontSize: 17, letterSpacing: -0.3, marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{featuredTrack.name}</div>
                     <div style={{ color: "#b3b3b3", fontSize: 13, marginBottom: 12 }}>{featuredTrack.artist_name}</div>
                     <button onClick={() => playTrack(featuredTrack)} style={{
-                      background: "#1db954", border: "none", borderRadius: 99,
+                      background: "#4b0082", border: "none", borderRadius: 99,
                       padding: "8px 20px", color: "#000", fontWeight: 700,
                       fontSize: 13, cursor: "pointer", fontFamily: "inherit",
                       display: "flex", alignItems: "center", gap: 6, transition: "transform 0.15s",
@@ -688,7 +688,7 @@ export default function Dashboard() {
               <div style={{ textAlign: "center", padding: "60px 20px", color: "#b3b3b3" }}>
                 <div style={{ fontSize: 48, marginBottom: 12 }}>😕</div>
                 <div style={{ fontWeight: 600, marginBottom: 8 }}>No tracks found</div>
-                <button onClick={() => fetchTracks(GENRES[activeGenre].tag)} style={{ background: "#1db954", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Try Again</button>
+                <button onClick={() => fetchTracks(GENRES[activeGenre].tag)} style={{ background: "#4b0082", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Try Again</button>
               </div>
             )}
           </div>
@@ -704,7 +704,7 @@ export default function Dashboard() {
           <div className="fade-up">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
               <h2 style={{ fontWeight: 700, fontSize: 22, letterSpacing: -0.5 }}>Your Library</h2>
-              <button onClick={() => setShowNewPlaylist(true)} style={{ background: "#1db954", border: "none", borderRadius: 99, padding: "8px 16px", color: "#000", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
+              <button onClick={() => setShowNewPlaylist(true)} style={{ background: "#4b0082", border: "none", borderRadius: 99, padding: "8px 16px", color: "#000", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
                 {Icons.plus} New
               </button>
             </div>
@@ -714,7 +714,7 @@ export default function Dashboard() {
                 <div style={{ fontSize: 48, marginBottom: 12 }}>🎵</div>
                 <div style={{ fontWeight: 600, marginBottom: 8 }}>No playlists yet</div>
                 <div style={{ color: "#b3b3b3", fontSize: 13, marginBottom: 20 }}>Create your first playlist!</div>
-                <button onClick={() => setShowNewPlaylist(true)} style={{ background: "#1db954", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create Playlist</button>
+                <button onClick={() => setShowNewPlaylist(true)} style={{ background: "#4b0082", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create Playlist</button>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -735,7 +735,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 4 }} onClick={e => e.stopPropagation()}>
-                      <button className="btn-icon" onClick={() => togglePublic(pl.id)} title={pl.isPublic ? "Make private" : "Make public"} style={{ color: pl.isPublic ? "#1db954" : "#b3b3b3" }}>
+                      <button className="btn-icon" onClick={() => togglePublic(pl.id)} title={pl.isPublic ? "Make private" : "Make public"} style={{ color: pl.isPublic ? "#4b0082" : "#b3b3b3" }}>
                         {pl.isPublic ? Icons.unlock : Icons.lock}
                       </button>
                       {pl.isPublic && (
@@ -774,7 +774,7 @@ export default function Dashboard() {
                   </span>
                   <span>· {activePlaylist.tracks.length} songs</span>
                   {activePlaylist.isPublic && (
-                    <button onClick={() => copyPlaylistLink(activePlaylist.id)} style={{ background: "none", border: "none", color: "#1db954", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 4, fontFamily: "inherit" }}>
+                    <button onClick={() => copyPlaylistLink(activePlaylist.id)} style={{ background: "none", border: "none", color: "#4b0082", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 4, fontFamily: "inherit" }}>
                       {Icons.copy} Copy Link
                     </button>
                   )}
@@ -785,7 +785,7 @@ export default function Dashboard() {
             {/* Actions */}
             <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
               {activePlaylist.tracks.length > 0 && (
-                <button onClick={() => { setCurrentTrack(activePlaylist.tracks[0]); setPlaying(true); }} style={{ background: "#1db954", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }}>
+                <button onClick={() => { setCurrentTrack(activePlaylist.tracks[0]); setPlaying(true); }} style={{ background: "#4b0082", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }}>
                   {Icons.play} Play All
                 </button>
               )}
@@ -799,7 +799,7 @@ export default function Dashboard() {
               <div style={{ textAlign: "center", padding: "40px 20px", color: "#b3b3b3" }}>
                 <div style={{ fontSize: 40, marginBottom: 12 }}>🎵</div>
                 <div>No songs yet. Search and add songs!</div>
-                <button onClick={() => setActiveTab("search")} style={{ background: "#1db954", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", marginTop: 16 }}>Find Music</button>
+                <button onClick={() => setActiveTab("search")} style={{ background: "#4b0082", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", marginTop: 16 }}>Find Music</button>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column" }}>
@@ -811,7 +811,7 @@ export default function Dashboard() {
                   >
                     <img src={track.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }} style={{ width: 42, height: 42, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
                     <div style={{ flex: 1, overflow: "hidden" }}>
-                      <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#1db954" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.name}</div>
+                      <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#4b0082" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.name}</div>
                       <div style={{ color: "#b3b3b3", fontSize: 12 }}>{track.artist_name}</div>
                     </div>
                     <button onClick={e => { e.stopPropagation(); removeFromPlaylist(activePlaylist.id, track.id); }} className="btn-icon" style={{ color: "#ff4444" }}>
@@ -827,7 +827,7 @@ export default function Dashboard() {
         {/* LIKED SONGS */}
         {activeTab === "liked" && (
           <div className="fade-up">
-            <div style={{ background: "linear-gradient(135deg, #4b0082, #1db954)", borderRadius: 12, padding: 20, marginBottom: 24, display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ background: "linear-gradient(135deg, #4b0082, #800080)", borderRadius: 12, padding: 20, marginBottom: 24, display: "flex", alignItems: "center", gap: 14 }}>
               <div style={{ width: 64, height: 64, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>❤️</div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: 20 }}>Liked Songs</div>
@@ -861,7 +861,7 @@ export default function Dashboard() {
       {currentTrack && (
         <div className="mini-player" onClick={() => setShowPlayer(true)}>
           <div style={{ height: 2, background: "#282828" }}>
-            <div style={{ height: "100%", background: "#1db954", width: `${progressPct}%`, transition: "width 0.1s" }} />
+            <div style={{ height: "100%", background: "#4b0082", width: `${progressPct}%`, transition: "width 0.1s" }} />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px" }}>
             <img src={currentTrack.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }}
@@ -871,7 +871,7 @@ export default function Dashboard() {
               <div style={{ color: "#b3b3b3", fontSize: 11 }}>{currentTrack.artist_name}</div>
             </div>
             <div style={{ display: "flex", gap: 4, alignItems: "center" }} onClick={e => e.stopPropagation()}>
-              <button className="btn-icon" onClick={() => toggleLike(currentTrack.id)} style={{ color: liked.has(currentTrack.id) ? "#1db954" : "#b3b3b3" }}>
+              <button className="btn-icon" onClick={() => toggleLike(currentTrack.id)} style={{ color: liked.has(currentTrack.id) ? "#4b0082" : "#b3b3b3" }}>
                 {liked.has(currentTrack.id) ? Icons.heartFill : Icons.heart}
               </button>
               <button onClick={() => setPlaying(p => !p)} style={{ width: 40, height: 40, borderRadius: "50%", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#000" }}>
@@ -939,10 +939,10 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
         <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && search()}
           placeholder="Artists, songs, albums..."
           style={{ flex: 1, background: "#282828", border: "2px solid transparent", borderRadius: 8, padding: "12px 16px", color: "#fff", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border-color 0.2s" }}
-          onFocus={e => e.target.style.borderColor = "#1db954"}
+          onFocus={e => e.target.style.borderColor = "#4b0082"}
           onBlur={e => e.target.style.borderColor = "transparent"}
         />
-        <button onClick={() => search()} style={{ background: "#1db954", border: "none", borderRadius: 8, padding: "0 18px", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: 16 }}>→</button>
+        <button onClick={() => search()} style={{ background: "#4b0082", border: "none", borderRadius: 8, padding: "0 18px", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: 16 }}>→</button>
       </div>
 
       {!searched && (
@@ -995,17 +995,17 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
                   {currentTrack?.id === track.id && playing && (
                     <div style={{ position: "absolute", inset: 0, borderRadius: 6, background: "#00000088", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 14 }}>
-                        {[0, 1, 2].map((j: number) => <div key={j} style={{ width: 3, borderRadius: 2, background: "#1db954", height: "100%", animation: `waveAnim ${0.5 + j * 0.15}s ${j * 0.1}s ease-in-out infinite` }} />)}
+                        {[0, 1, 2].map((j: number) => <div key={j} style={{ width: 3, borderRadius: 2, background: "#4b0082", height: "100%", animation: `waveAnim ${0.5 + j * 0.15}s ${j * 0.1}s ease-in-out infinite` }} />)}
                       </div>
                     </div>
                   )}
                 </div>
                 <div style={{ flex: 1, overflow: "hidden" }}>
-                  <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#1db954" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 2 }}>{track.name}</div>
+                  <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#4b0082" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 2 }}>{track.name}</div>
                   <div style={{ color: "#b3b3b3", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.artist_name}</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }} onClick={(e: any) => e.stopPropagation()}>
-                  <button onClick={() => toggleLike(track.id)} style={{ background: "none", border: "none", cursor: "pointer", color: liked.has(track.id) ? "#1db954" : "#b3b3b3", display: "flex", padding: 4 }}>
+                  <button onClick={() => toggleLike(track.id)} style={{ background: "none", border: "none", cursor: "pointer", color: liked.has(track.id) ? "#4b0082" : "#b3b3b3", display: "flex", padding: 4 }}>
                     {liked.has(track.id) ? Icons.heartFill : Icons.heart}
                   </button>
                   <span style={{ color: "#b3b3b3", fontSize: 12 }}>{formatTime(track.duration)}</span>
