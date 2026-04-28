@@ -84,10 +84,11 @@ export default function Dashboard() {
   const [showAddToPlaylist, setShowAddToPlaylist] = useState<Track | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const showToast = (msg: string) => {
+  const showToast = useCallback((msg: string) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 2500);
-  };
+    const timer = setTimeout(() => setToast(null), 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -95,15 +96,19 @@ export default function Dashboard() {
       else setUser(data.user);
     });
     // Load playlists from localStorage
-    const saved = localStorage.getItem("wavely_playlists");
-    if (saved) setPlaylists(JSON.parse(saved));
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("wavely_playlists");
+      if (saved) setPlaylists(JSON.parse(saved));
+    }
     fetchTracks(GENRES[0].tag);
   }, []);
 
-  const savePlaylists = (updated: Playlist[]) => {
+  const savePlaylists = useCallback((updated: Playlist[]) => {
     setPlaylists(updated);
-    localStorage.setItem("wavely_playlists", JSON.stringify(updated));
-  };
+    if (typeof window !== "undefined") {
+      localStorage.setItem("wavely_playlists", JSON.stringify(updated));
+    }
+  }, []);
 
   const createPlaylist = () => {
     if (!newPlaylistName.trim()) return;
@@ -157,10 +162,12 @@ export default function Dashboard() {
     showToast(pl?.isPublic ? "🌍 Playlist is now public!" : "🔒 Playlist is now private");
   };
 
-  const copyPlaylistLink = (id: string) => {
-    const url = `${window.location.origin}/playlist/${id}`;
-    navigator.clipboard?.writeText(url).then(() => showToast("🔗 Link copied!"));
-  };
+  const copyPlaylistLink = useCallback((id: string) => {
+    if (typeof window !== "undefined") {
+      const url = `${window.location.origin}/playlist/${id}`;
+      navigator.clipboard?.writeText(url).then(() => showToast("🔗 Link copied!"));
+    }
+  }, [showToast]);
 
   const fetchTracks = useCallback(async (tag: string) => {
     setLoading(true);
@@ -206,7 +213,7 @@ export default function Dashboard() {
 
   const allTracks = featuredTrack ? [featuredTrack, ...tracks] : tracks;
 
-  const handleEnded = () => {
+  const handleEnded = useCallback(() => {
     if (repeat && currentTrack && audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.play();
@@ -222,14 +229,14 @@ export default function Dashboard() {
     } else {
       setPlaying(false);
     }
-  };
+  }, [repeat, currentTrack, shuffle, activePlaylist, allTracks]);
 
-  const handleTimeUpdate = () => {
+  const handleTimeUpdate = useCallback(() => {
     if (audioRef.current) {
       setProgress(audioRef.current.currentTime);
       setDuration(audioRef.current.duration || 0);
     }
-  };
+  }, []);
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!audioRef.current || !duration) return;
@@ -284,7 +291,6 @@ export default function Dashboard() {
         padding: "8px 12px", borderRadius: 8,
         cursor: "pointer", transition: "background 0.15s",
         background: currentTrack?.id === track.id ? "#ffffff12" : "transparent",
-        group: "track",
       }}
       onMouseEnter={e => { if (currentTrack?.id !== track.id) e.currentTarget.style.background = "#ffffff08"; }}
       onMouseLeave={e => { if (currentTrack?.id !== track.id) e.currentTarget.style.background = "transparent"; }}
@@ -834,8 +840,8 @@ export default function Dashboard() {
                 <div>No liked songs yet. Heart a song to save it!</div>
               </div>
             ) : (
-              <div style={{ color: "#b3b3b3", fontSize: 14, textAlign: "center", padding: "20px 0" }}>
-                Like songs while browsing to see them here!
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {allTracks.filter(track => liked.has(track.id)).map(track => <TrackRow key={track.id} track={track} />)}
               </div>
             )}
           </div>
