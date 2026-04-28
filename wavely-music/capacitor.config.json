@@ -1,0 +1,8 @@
+{
+  "appId": "com.wavely.music",
+  "appName": "Wavely Music",
+  "webDir": "out",
+  "server": {
+    "androidScheme": "https"
+  }
+}
