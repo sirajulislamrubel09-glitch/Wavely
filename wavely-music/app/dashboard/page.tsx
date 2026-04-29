@@ -989,7 +989,7 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
     setSearching(true); setSearched(true);
     try {
       const res = await fetch(
-        `https://jiosaavn-api-qefh.onrender.com/api/search/songs?query=${encodeURIComponent(sq)}&limit=25`
+        `/api/music?query=${encodeURIComponent(sq)}&limit=25`
       );
       const data = await res.json();
 
