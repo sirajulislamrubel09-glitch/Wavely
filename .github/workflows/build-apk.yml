@@ -32,6 +32,8 @@ jobs:
       - name: Sync Capacitor
         run: |
           cd wavely-music
+          mkdir -p out
+          npm run build
           npx cap sync android
 
       - name: Setup Java
