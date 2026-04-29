@@ -41,7 +41,12 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
+
+      - name: Set Java compatibility
+        run: |
+          cd wavely-music/android
+          echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
 
       - name: Build APK
         run: |
