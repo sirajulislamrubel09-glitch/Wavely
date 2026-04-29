@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 
 const SAAVN = "https://jiosaavn-api-qefh.onrender.com";
