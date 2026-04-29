@@ -962,7 +962,7 @@ export default function Dashboard() {
           { id: "search", icon: Icons.search, label: "Search" },
           { id: "library", icon: Icons.library, label: "Library" },
           { id: "activity", icon: Icons.bell, label: "Activity" },
-        ].map(tab => (ttpsttps
+        ].map(tab => (
           <button key={tab.id} className={`nav-btn ${activeTab === tab.id ? "active" : ""}`} onClick={() => setActiveTab(tab.id)}>
             {tab.icon}
             <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: 0.3 }}>{tab.label.toUpperCase()}</span>
