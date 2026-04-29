@@ -962,7 +962,7 @@ export default function Dashboard() {
           { id: "search", icon: Icons.search, label: "Search" },
           { id: "library", icon: Icons.library, label: "Library" },
           { id: "activity", icon: Icons.bell, label: "Activity" },
-        ].map(tab => (
+        ].map(tab => (ttpsttps
           <button key={tab.id} className={`nav-btn ${activeTab === tab.id ? "active" : ""}`} onClick={() => setActiveTab(tab.id)}>
             {tab.icon}
             <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: 0.3 }}>{tab.label.toUpperCase()}</span>
@@ -989,7 +989,7 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
     setSearching(true); setSearched(true);
     try {
       const res = await fetch(
-        `https://wavely-music-rho.vercel.app/api/music?query=...`
+        `https://jiosaavn-api-qefh.onrender.com/api/search/songs?query=${encodeURIComponent(tag)}&limit=30`
       );
       const data = await res.json();
 
