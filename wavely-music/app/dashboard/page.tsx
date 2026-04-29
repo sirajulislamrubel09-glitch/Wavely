@@ -989,7 +989,7 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
     setSearching(true); setSearched(true);
     try {
       const res = await fetch(
-        `/api/music?query=${encodeURIComponent(sq)}&limit=25`
+        `https://wavely-music-rho.vercel.app/api/music?query=...`
       );
       const data = await res.json();
 
