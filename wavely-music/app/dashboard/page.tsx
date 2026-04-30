@@ -20,43 +20,46 @@ interface Playlist {
   createdAt: number;
 }
 
-// SVG Icons
+// Modern SVG Icons with gradient support
 const Icons = {
-  home: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>,
-  search: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>,
-  library: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
-  plus: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-  play: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
-  pause: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
-  prev: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" strokeWidth="2"/></svg>,
-  next: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2"/></svg>,
-  shuffle: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>,
-  repeat: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
-  heart: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
-  heartFill: <svg width="16" height="16" viewBox="0 0 24 24" fill="#ba55d3" stroke="#ba55d3" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
-  volume: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>,
-  dots: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>,
-  share: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
-  lock: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-  unlock: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>,
-  trash: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>,
-  music: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
-  user: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-  bell: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
-  menu: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
-  chevronRight: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>,
-  copy: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+  home: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L2 9l10 6 10-6-10-6zM2 15l10 6 10-6"/><path d="M2 12l10 6 10-6"/></svg>,
+  search: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>,
+  library: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+  plus: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  play: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+  pause: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+  prev: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" strokeWidth="2"/></svg>,
+  next: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2"/></svg>,
+  shuffle: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>,
+  repeat: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
+  heart: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+  heartFill: <svg width="18" height="18" viewBox="0 0 24 24" fill="#c084fc" stroke="#c084fc" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+  volume: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>,
+  volumeX: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>,
+  dots: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>,
+  share: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+  lock: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+  unlock: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>,
+  trash: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>,
+  music: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
+  user: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  bell: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
+  menu: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+  chevronRight: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>,
+  copy: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+  mic: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>,
+  trending: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>,
 };
 
 const GENRES = [
-  { label: "Trending", tag: "trending hindi 2024" },
-  { label: "Bollywood", tag: "bollywood hits" },
-  { label: "Arijit Singh", tag: "arijit singh" },
-  { label: "Lo-Fi", tag: "lofi hindi" },
-  { label: "Romantic", tag: "romantic hindi songs" },
-  { label: "Party", tag: "party songs hindi" },
-  { label: "English", tag: "english pop 2024" },
-  { label: "Bengali", tag: "bengali songs" },
+  { label: "Trending", tag: "trending hindi 2024", icon: Icons.trending },
+  { label: "Bollywood", tag: "bollywood hits", icon: null },
+  { label: "Arijit Singh", tag: "arijit singh", icon: null },
+  { label: "Lo-Fi", tag: "lofi hindi", icon: null },
+  { label: "Romantic", tag: "romantic hindi songs", icon: null },
+  { label: "Party", tag: "party songs hindi", icon: null },
+  { label: "English", tag: "english pop 2024", icon: null },
+  { label: "Bengali", tag: "bengali songs", icon: null },
 ];
 
 export default function Dashboard() {
@@ -83,6 +86,7 @@ export default function Dashboard() {
   const [activePlaylist, setActivePlaylist] = useState<Playlist | null>(null);
   const [showAddToPlaylist, setShowAddToPlaylist] = useState<Track | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -95,7 +99,6 @@ export default function Dashboard() {
       if (!data.user) window.location.href = "/auth";
       else {
         setUser(data.user);
-        // Load playlists from Supabase
         try {
           const { data: dbPlaylists } = await supabase
             .from('playlists')
@@ -114,7 +117,6 @@ export default function Dashboard() {
               localStorage.setItem("wavely_playlists", JSON.stringify(loaded));
             }
           } else {
-            // Load from localStorage if no DB data
             if (typeof window !== "undefined") {
               const saved = localStorage.getItem("wavely_playlists");
               if (saved) setPlaylists(JSON.parse(saved));
@@ -122,7 +124,6 @@ export default function Dashboard() {
           }
         } catch (error) {
           console.error('Error loading playlists:', error);
-          // Fallback to localStorage
           if (typeof window !== "undefined") {
             const saved = localStorage.getItem("wavely_playlists");
             if (saved) setPlaylists(JSON.parse(saved));
@@ -137,13 +138,10 @@ export default function Dashboard() {
     if (typeof window !== "undefined") {
       localStorage.setItem("wavely_playlists", JSON.stringify(updated));
     }
-    // Also save to Supabase for public playlists
     if (user) {
       const publicPlaylists = updated.filter(p => p.isPublic);
       try {
-        // Delete existing public playlists for this user
         await supabase.from('playlists').delete().eq('user_id', user.id);
-        // Insert new public playlists
         if (publicPlaylists.length > 0) {
           const toInsert = publicPlaylists.map(p => ({
             id: p.id,
@@ -173,7 +171,7 @@ export default function Dashboard() {
     savePlaylists([...playlists, newPl]);
     setNewPlaylistName("");
     setShowNewPlaylist(false);
-    showToast(`✅ "${newPl.name}" created!`);
+    showToast(`✨ "${newPl.name}" created!`);
   };
 
   const addToPlaylist = (playlist: Playlist, track: Track) => {
@@ -184,7 +182,7 @@ export default function Dashboard() {
     );
     savePlaylists(updated);
     setShowAddToPlaylist(null);
-    showToast(`Added to "${playlist.name}"! 🎵`);
+    showToast(`🎵 Added to "${playlist.name}"!`);
   };
 
   const removeFromPlaylist = (playlistId: string, trackId: string) => {
@@ -195,6 +193,7 @@ export default function Dashboard() {
     if (activePlaylist?.id === playlistId) {
       setActivePlaylist(updated.find(p => p.id === playlistId) || null);
     }
+    showToast("🗑️ Removed from playlist");
   };
 
   const deletePlaylist = (id: string) => {
@@ -260,12 +259,11 @@ export default function Dashboard() {
     setActiveTab("home");
   };
 
-  // Audio
   useEffect(() => {
     if (!currentTrack?.audio || !audioRef.current) return;
     audioRef.current.pause();
     audioRef.current.src = currentTrack.audio;
-    audioRef.current.volume = volume;
+    audioRef.current.volume = isMuted ? 0 : volume;
     audioRef.current.load();
     audioRef.current.play().catch(() => {});
   }, [currentTrack]);
@@ -275,6 +273,12 @@ export default function Dashboard() {
     if (playing) audioRef.current.play().catch(() => {});
     else audioRef.current.pause();
   }, [playing]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted]);
 
   const allTracks = featuredTrack ? [featuredTrack, ...tracks] : tracks;
 
@@ -346,29 +350,28 @@ export default function Dashboard() {
 
   const displayName = user?.user_metadata?.username || user?.email?.split("@")[0] || "Listener";
   const progressPct = duration ? (progress / duration) * 100 : 0;
-  const imgFallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect width='50' height='50' fill='%23282828'/%3E%3Ctext x='25' y='32' text-anchor='middle' font-size='22'%3E🎵%3C/text%3E%3C/svg%3E";
+  const imgFallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect width='50' height='50' fill='%23181818'/%3E%3Ctext x='25' y='32' text-anchor='middle' font-size='22' fill='%23535353'%3E🎵%3C/text%3E%3C/svg%3E";
 
   const TrackRow = ({ track, showMenu = true }: { track: Track; showMenu?: boolean }) => (
     <div
       onClick={() => playTrack(track)}
+      className="track-row group"
       style={{
-        display: "flex", alignItems: "center", gap: 12,
-        padding: "8px 12px", borderRadius: 8,
-        cursor: "pointer", transition: "background 0.15s",
-        background: currentTrack?.id === track.id ? "#ffffff12" : "transparent",
+        display: "flex", alignItems: "center", gap: 14,
+        padding: "10px 16px", borderRadius: 12,
+        cursor: "pointer", transition: "all 0.2s ease",
+        background: currentTrack?.id === track.id ? "rgba(192, 132, 252, 0.15)" : "transparent",
+        marginBottom: 2,
       }}
-      onMouseEnter={e => { if (currentTrack?.id !== track.id) e.currentTarget.style.background = "#ffffff08"; }}
-      onMouseLeave={e => { if (currentTrack?.id !== track.id) e.currentTarget.style.background = "transparent"; }}
     >
-      {/* Art */}
       <div style={{ position: "relative", flexShrink: 0 }}>
         <img src={track.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }}
-          style={{ width: 42, height: 42, borderRadius: 6, objectFit: "cover" }} />
+          style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover", boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }} />
         {currentTrack?.id === track.id && playing && (
-          <div style={{ position: "absolute", inset: 0, borderRadius: 6, background: "#00000088", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 14 }}>
+          <div style={{ position: "absolute", inset: 0, borderRadius: 10, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div className="wave-animation" style={{ display: "flex", gap: 3, alignItems: "flex-end", height: 16 }}>
               {[0, 1, 2].map(j => (
-                <div key={j} style={{ width: 3, borderRadius: 2, background: "#ba55d3", height: "100%",
+                <div key={j} style={{ width: 3, borderRadius: 2, background: "#c084fc", height: "100%",
                   animation: `waveAnim ${0.5 + j * 0.15}s ${j * 0.1}s ease-in-out infinite` }} />
               ))}
             </div>
@@ -376,23 +379,23 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Info */}
       <div style={{ flex: 1, overflow: "hidden" }}>
-        <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#ba55d3" : "#fff",
-          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 2 }}>{track.name}</div>
-        <div style={{ color: "#b3b3b3", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <div style={{ fontWeight: 600, fontSize: 14, color: currentTrack?.id === track.id ? "#c084fc" : "#fff",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 4 }}>
+          {track.name}
+        </div>
+        <div style={{ color: "#a1a1aa", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {track.artist_name}
         </div>
       </div>
 
-      {/* Actions */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-        <button onClick={() => toggleLike(track.id)} style={{ background: "none", border: "none", cursor: "pointer", color: liked.has(track.id) ? "#ba55d3" : "#b3b3b3", display: "flex", padding: 4, transition: "color 0.2s" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+        <button className="icon-btn" onClick={() => toggleLike(track.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, borderRadius: "50%", transition: "all 0.2s", color: liked.has(track.id) ? "#c084fc" : "#a1a1aa" }}>
           {liked.has(track.id) ? Icons.heartFill : Icons.heart}
         </button>
-        <span style={{ color: "#b3b3b3", fontSize: 12 }}>{formatTime(track.duration)}</span>
+        <span style={{ color: "#a1a1aa", fontSize: 12, fontFamily: "monospace" }}>{formatTime(track.duration)}</span>
         {showMenu && (
-          <button onClick={() => setShowAddToPlaylist(track)} style={{ background: "none", border: "none", cursor: "pointer", color: "#b3b3b3", display: "flex", padding: 4 }}>
+          <button className="icon-btn" onClick={() => setShowAddToPlaylist(track)} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, borderRadius: "50%", color: "#a1a1aa" }}>
             {Icons.dots}
           </button>
         )}
@@ -401,114 +404,102 @@ export default function Dashboard() {
   );
 
   return (
-    <div style={{ background: "#121212", minHeight: "100vh", fontFamily: "'Circular', 'DM Sans', system-ui, sans-serif", color: "#fff", display: "flex", flexDirection: "column" }}>
+    <div style={{ background: "#0a0a0a", minHeight: "100vh", fontFamily: "'Inter', 'DM Sans', system-ui, sans-serif", color: "#fff", display: "flex", flexDirection: "column" }}>
       <audio ref={audioRef} onTimeUpdate={handleTimeUpdate} onEnded={handleEnded} onLoadedMetadata={handleTimeUpdate} />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-thumb { background: #535353; border-radius: 2px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        a { text-decoration: none; color: inherit; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1f1f1f; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #3f3f3f; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c084fc; }
 
         @keyframes waveAnim { 0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
         @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
         @keyframes slideIn { from { transform:translateX(-100%); } to { transform:translateX(0); } }
         @keyframes slideUp { from { transform:translateY(100%); opacity:0; } to { transform:translateY(0); opacity:1; } }
-        @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+        @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+        @keyframes glow { 0% { box-shadow: 0 0 5px rgba(192,132,252,0.3); } 100% { box-shadow: 0 0 20px rgba(192,132,252,0.6); } }
+        @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.4); opacity: 0; } }
 
-        .fade-up { animation: fadeUp 0.35s ease forwards; }
+        .fade-up { animation: fadeUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; }
+        .track-row:hover { background: rgba(255,255,255,0.05) !important; }
+        .icon-btn { transition: all 0.2s ease; }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); color: #c084fc !important; }
+        .genre-pill { transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
+        .genre-pill:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        .gradient-border { position: relative; background: linear-gradient(135deg, #c084fc, #8b5cf6, #a855f7); padding: 1px; border-radius: 16px; }
+        .gradient-border > * { background: #0a0a0a; border-radius: 15px; margin: 0; }
+        
+        input[type='range'] { -webkit-appearance:none; background:transparent; cursor:pointer; }
+        input[type='range']::-webkit-slider-track { background:#3f3f3f; border-radius:10px; height:4px; }
+        input[type='range']::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:#c084fc; margin-top:-5px; box-shadow:0 2px 8px rgba(192,132,252,0.5); transition:transform 0.1s; }
+        input[type='range']::-webkit-slider-thumb:hover { transform:scale(1.2); }
+        input[type='range']::-moz-range-track { background:#3f3f3f; height:4px; border-radius:10px; }
+        input[type='range']::-moz-range-thumb { width:14px; height:14px; border:none; border-radius:50%; background:#c084fc; }
 
-        input[type='range'] { -webkit-appearance:none; appearance:none; background:transparent; cursor:pointer; }
-        input[type='range']::-webkit-slider-track { background:#535353; border-radius:2px; height:4px; }
-        input[type='range']::-webkit-slider-thumb { -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:#fff; margin-top:-4px; }
-
-        .btn-icon { background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:8px; border-radius:50%; transition:all 0.15s; color:#b3b3b3; }
-        .btn-icon:hover { color:#fff; background:#ffffff12; }
-        .btn-icon.active { color:#ba55d3; }
-
-        .genre-pill { border:none; border-radius:99px; padding:6px 14px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; white-space:nowrap; font-family:'DM Sans',system-ui; }
-        .genre-pill:hover { transform:scale(1.04); }
-
-        .playlist-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:6px; cursor:pointer; transition:background 0.15s; }
-        .playlist-item:hover { background:#ffffff10; }
-
-        .overlay { position:fixed; inset:0; background:#00000077; z-index:40; }
-        .sidebar-panel { position:fixed; top:0; left:0; bottom:0; width:290px; background:#0a0a0a; border-right:1px solid #282828; z-index:50; display:flex; flex-direction:column; animation:slideIn 0.25s ease; overflow:hidden; }
-        .player-panel { position:fixed; bottom:0; left:0; right:0; background:linear-gradient(to top, #0a0a0a, #181818); border-radius:16px 16px 0 0; border-top:1px solid #282828; z-index:50; animation:slideUp 0.3s ease; max-height:90vh; overflow-y:auto; }
-        .modal { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#282828; border-radius:12px; padding:24px; z-index:60; width:90%; max-width:340px; }
-
-        .mini-player { position:fixed; bottom:64px; left:0; right:0; background:linear-gradient(to right, #181818, #212121); border-top:1px solid #282828; z-index:30; cursor:pointer; }
-        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:#0a0a0a; border-top:1px solid #282828; z-index:30; display:flex; justify-content:space-around; padding:10px 0 14px; }
-        .nav-btn { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; padding:4px 16px; color:#b3b3b3; transition:color 0.15s; font-family:'DM Sans',system-ui; }
-        .nav-btn.active { color:#fff; }
-        .nav-btn:hover { color:#fff; }
+        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:rgba(10,10,10,0.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,0.08); z-index:30; display:flex; justify-content:space-around; padding:8px 0 16px; }
+        .nav-btn { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; padding:6px 20px; color:#a1a1aa; transition:all 0.2s; font-family:'Inter',system-ui; border-radius:12px; }
+        .nav-btn.active { color:#c084fc; background:rgba(192,132,252,0.1); }
+        .nav-btn:hover { color:#fff; background:rgba(255,255,255,0.05); transform:translateY(-2px); }
       `}</style>
 
       {/* SIDEBAR */}
       {sidebarOpen && (
         <>
-          <div className="overlay" onClick={() => setSidebarOpen(false)} />
-          <div className="sidebar-panel">
-            {/* Logo */}
-            <div style={{ padding: "20px 16px 12px", borderBottom: "1px solid #282828" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 36, height: 36, background: "#ba55d3", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {Icons.music}
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={() => setSidebarOpen(false)} />
+          <div className="sidebar-panel" style={{ position:"fixed", top:0, left:0, bottom:0, width:"300px", background:"#0f0f0f", borderRight:"1px solid rgba(255,255,255,0.08)", zIndex:50, display:"flex", flexDirection:"column", animation:"slideIn 0.25s ease", overflow:"hidden" }}>
+            <div style={{ padding: "24px 20px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
+                <div className="gradient-border" style={{ width: 44, height: 44, borderRadius: 14, padding: 1 }}>
+                  <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #c084fc, #a855f7)", borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {Icons.music}
+                  </div>
                 </div>
-                <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: -0.3 }}>Wavely</span>
+                <span style={{ fontWeight: 800, fontSize: 20, letterSpacing: -0.5, background: "linear-gradient(135deg, #c084fc, #e9d5ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Wavely</span>
               </div>
-              {/* Nav */}
               {[
                 { icon: Icons.home, label: "Home", tab: "home" },
                 { icon: Icons.search, label: "Search", tab: "search" },
                 { icon: Icons.library, label: "Library", tab: "library" },
               ].map(item => (
-                <div key={item.tab} onClick={() => { setActiveTab(item.tab); setSidebarOpen(false); }} style={{
-                  display: "flex", alignItems: "center", gap: 12,
-                  padding: "10px 8px", borderRadius: 6, cursor: "pointer",
-                  transition: "background 0.15s",
-                  background: activeTab === item.tab ? "#ffffff12" : "transparent",
-                  color: activeTab === item.tab ? "#fff" : "#b3b3b3",
-                  marginBottom: 2,
-                }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#ffffff10"}
-                  onMouseLeave={e => e.currentTarget.style.background = activeTab === item.tab ? "#ffffff12" : "transparent"}
-                >
-                  {item.icon}
+                <div key={item.tab} onClick={() => { setActiveTab(item.tab); setSidebarOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all mb-1" style={{
+                  background: activeTab === item.tab ? "rgba(192,132,252,0.15)" : "transparent",
+                  color: activeTab === item.tab ? "#c084fc" : "#a1a1aa",
+                }}>
+                  <span style={{ opacity: activeTab === item.tab ? 1 : 0.7 }}>{item.icon}</span>
                   <span style={{ fontWeight: 600, fontSize: 14 }}>{item.label}</span>
                 </div>
               ))}
             </div>
 
-            {/* Playlists */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "12px 16px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: "#b3b3b3", textTransform: "uppercase" }}>Your Playlists</span>
-                <button onClick={() => setShowNewPlaylist(true)} className="btn-icon" style={{ width: 28, height: 28, padding: 4 }}>{Icons.plus}</button>
+            <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px" }}>
+              <div className="flex items-center justify-between mb-4">
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: "#a1a1aa", textTransform: "uppercase" }}>Your Library</span>
+                <button onClick={() => setShowNewPlaylist(true)} className="icon-btn" style={{ width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", background: "rgba(255,255,255,0.05)" }}>{Icons.plus}</button>
               </div>
 
-              {/* Liked Songs */}
-              <div className="playlist-item" onClick={() => { setActiveTab("liked"); setSidebarOpen(false); }}>
-                <div style={{ width: 36, height: 36, borderRadius: 6, background: "linear-gradient(135deg, #ba55d3, #6a0dad)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div className="playlist-item" onClick={() => { setActiveTab("liked"); setSidebarOpen(false); }} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 12px", borderRadius:10, cursor:"pointer", marginBottom:2 }}>
+                <div style={{ width: 42, height: 42, borderRadius: 10, background: "linear-gradient(135deg, #c084fc, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {Icons.heartFill}
                 </div>
                 <div style={{ flex: 1, overflow: "hidden" }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Liked Songs</div>
-                  <div style={{ fontSize: 11, color: "#b3b3b3" }}>{liked.size} songs</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Liked Songs</div>
+                  <div style={{ fontSize: 11, color: "#a1a1aa" }}>{liked.size} songs</div>
                 </div>
               </div>
 
               {playlists.map(pl => (
-                <div key={pl.id} className="playlist-item" onClick={() => { setActivePlaylist(pl); setActiveTab("playlist"); setSidebarOpen(false); }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 6, background: "#282828", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16 }}>
-                    {pl.tracks[0] ? <img src={pl.tracks[0].image || imgFallback} alt="" style={{ width: "100%", height: "100%", borderRadius: 6, objectFit: "cover" }} onError={e => { (e.target as HTMLImageElement).src = imgFallback; }} /> : "🎵"}
+                <div key={pl.id} className="playlist-item group" onClick={() => { setActivePlaylist(pl); setActiveTab("playlist"); setSidebarOpen(false); }} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 12px", borderRadius:10, cursor:"pointer", transition:"background 0.15s" }}>
+                  <div style={{ width: 42, height: 42, borderRadius: 10, background: "#1f1f1f", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                    {pl.tracks[0] ? <img src={pl.tracks[0].image || imgFallback} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 18 }}>🎵</span>}
                   </div>
                   <div style={{ flex: 1, overflow: "hidden" }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{pl.name}</div>
-                    <div style={{ fontSize: 11, color: "#b3b3b3", display: "flex", alignItems: "center", gap: 4 }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{pl.name}</div>
+                    <div style={{ fontSize: 11, color: "#a1a1aa", display: "flex", alignItems: "center", gap: 4 }}>
                       {pl.isPublic ? Icons.unlock : Icons.lock}
                       {pl.isPublic ? "Public" : "Private"} · {pl.tracks.length} songs
                     </div>
@@ -517,24 +508,22 @@ export default function Dashboard() {
               ))}
 
               {playlists.length === 0 && (
-                <div style={{ padding: "20px 8px", textAlign: "center", color: "#535353", fontSize: 13 }}>
-                  No playlists yet.<br />Create one!
+                <div style={{ padding: "32px 16px", textAlign: "center", color: "#52525b", fontSize: 13 }}>
+                  No playlists yet.<br />Create your first!
                 </div>
               )}
             </div>
 
-            {/* User */}
-            <div style={{ padding: "12px 16px", borderTop: "1px solid #282828" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#535353", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700 }}>
+            <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="flex items-center gap-3 mb-3">
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg, #c084fc, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700 }}>
                   {displayName[0]?.toUpperCase()}
                 </div>
                 <span style={{ fontWeight: 600, fontSize: 13 }}>{displayName}</span>
               </div>
-              <button onClick={handleSignOut} style={{ width: "100%", background: "none", border: "1px solid #535353", borderRadius: 99, padding: "8px", color: "#b3b3b3", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s" }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "#fff"; e.currentTarget.style.color = "#fff"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "#535353"; e.currentTarget.style.color = "#b3b3b3"; }}
-              >Sign Out</button>
+              <button onClick={handleSignOut} className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 text-sm font-semibold text-gray-400 transition-all hover:border-white/30 hover:text-white">
+                Sign Out
+              </button>
             </div>
           </div>
         </>
@@ -543,18 +532,18 @@ export default function Dashboard() {
       {/* NEW PLAYLIST MODAL */}
       {showNewPlaylist && (
         <>
-          <div className="overlay" onClick={() => setShowNewPlaylist(false)} />
-          <div className="modal">
-            <h3 style={{ fontWeight: 700, fontSize: 18, marginBottom: 16 }}>Create Playlist</h3>
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40" onClick={() => setShowNewPlaylist(false)} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1f1f1f] rounded-2xl p-6 z-50 w-[90%] max-w-[360px] shadow-2xl border border-white/10">
+            <h3 style={{ fontWeight: 700, fontSize: 20, marginBottom: 20 }}>Create Playlist</h3>
             <input value={newPlaylistName} onChange={e => setNewPlaylistName(e.target.value)}
               onKeyDown={e => e.key === "Enter" && createPlaylist()}
               placeholder="Playlist name..."
-              style={{ width: "100%", background: "#3e3e3e", border: "none", borderRadius: 6, padding: "12px 14px", color: "#fff", fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 14 }}
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-c084fc transition-colors mb-5"
               autoFocus
             />
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setShowNewPlaylist(false)} style={{ flex: 1, background: "none", border: "1px solid #535353", borderRadius: 99, padding: "10px", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancel</button>
-              <button onClick={createPlaylist} style={{ flex: 1, background: "#ba55d3", border: "none", borderRadius: 99, padding: "10px", color: "#000", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create</button>
+            <div className="flex gap-3">
+              <button onClick={() => setShowNewPlaylist(false)} className="flex-1 bg-white/5 border border-white/10 rounded-full py-2.5 text-sm font-semibold text-white">Cancel</button>
+              <button onClick={createPlaylist} className="flex-1 bg-gradient-to-r from-c084fc to-a855f7 rounded-full py-2.5 text-sm font-bold text-black">Create</button>
             </div>
           </div>
         </>
@@ -563,36 +552,29 @@ export default function Dashboard() {
       {/* ADD TO PLAYLIST MODAL */}
       {showAddToPlaylist && (
         <>
-          <div className="overlay" onClick={() => setShowAddToPlaylist(null)} />
-          <div className="modal">
-            <h3 style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>Add to Playlist</h3>
-            <p style={{ color: "#b3b3b3", fontSize: 12, marginBottom: 16 }}>{showAddToPlaylist.name}</p>
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40" onClick={() => setShowAddToPlaylist(null)} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1f1f1f] rounded-2xl p-6 z-50 w-[90%] max-w-[360px] shadow-2xl border border-white/10">
+            <h3 style={{ fontWeight: 700, fontSize: 18, marginBottom: 4 }}>Add to Playlist</h3>
+            <p className="text-gray-400 text-sm mb-4 truncate">{showAddToPlaylist.name}</p>
             {playlists.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "20px 0", color: "#535353" }}>
-                <p style={{ marginBottom: 12 }}>No playlists yet!</p>
-                <button onClick={() => { setShowAddToPlaylist(null); setShowNewPlaylist(true); }} style={{ background: "#ba55d3", border: "none", borderRadius: 99, padding: "10px 20px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create Playlist</button>
+              <div className="text-center py-4">
+                <p className="text-gray-500 mb-3">No playlists yet!</p>
+                <button onClick={() => { setShowAddToPlaylist(null); setShowNewPlaylist(true); }} className="bg-gradient-to-r from-c084fc to-a855f7 rounded-full px-5 py-2 text-black font-semibold text-sm">Create Playlist</button>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 240, overflowY: "auto" }}>
+              <div className="flex flex-col gap-2 max-h-60 overflow-y-auto">
                 {playlists.map(pl => (
-                  <div key={pl.id} onClick={() => addToPlaylist(pl, showAddToPlaylist)} style={{
-                    display: "flex", alignItems: "center", gap: 10,
-                    padding: "10px 12px", borderRadius: 8,
-                    cursor: "pointer", background: "#3e3e3e", transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#535353"}
-                    onMouseLeave={e => e.currentTarget.style.background = "#3e3e3e"}
-                  >
-                    <span style={{ fontSize: 16 }}>🎵</span>
+                  <div key={pl.id} onClick={() => addToPlaylist(pl, showAddToPlaylist)} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-all">
+                    <span className="text-xl">🎵</span>
                     <div>
-                      <div style={{ fontWeight: 600, fontSize: 13 }}>{pl.name}</div>
-                      <div style={{ color: "#b3b3b3", fontSize: 11 }}>{pl.tracks.length} songs</div>
+                      <div className="font-semibold text-sm">{pl.name}</div>
+                      <div className="text-gray-400 text-xs">{pl.tracks.length} songs</div>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-            <button onClick={() => setShowAddToPlaylist(null)} style={{ width: "100%", marginTop: 12, background: "none", border: "1px solid #535353", borderRadius: 99, padding: "10px", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancel</button>
+            <button onClick={() => setShowAddToPlaylist(null)} className="w-full mt-4 bg-white/5 border border-white/10 rounded-full py-2.5 text-sm font-semibold text-white">Cancel</button>
           </div>
         </>
       )}
@@ -600,160 +582,133 @@ export default function Dashboard() {
       {/* FULL PLAYER */}
       {showPlayer && currentTrack && (
         <>
-          <div className="overlay" onClick={() => setShowPlayer(false)} />
-          <div className="player-panel" style={{ padding: "12px 20px 32px" }}>
-            <div style={{ width: 36, height: 4, background: "#535353", borderRadius: 2, margin: "0 auto 24px" }} />
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-40" onClick={() => setShowPlayer(false)} />
+          <div className="fixed bottom-0 left-0 right-0 bg-[#0f0f0f] rounded-t-3xl border-t border-white/10 z-50 animate-slideUp max-h-[90vh] overflow-y-auto" style={{ animation: "slideUp 0.3s ease" }}>
+            <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mt-3 mb-6" />
 
-            {/* Album art */}
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-              <img src={currentTrack.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }}
-                style={{ width: 220, height: 220, borderRadius: 12, objectFit: "cover", boxShadow: "0 20px 60px #00000088" }} />
-            </div>
-
-            {/* Track info */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-              <div style={{ flex: 1, overflow: "hidden" }}>
-                <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 4, letterSpacing: -0.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentTrack.name}</div>
-                <div style={{ color: "#b3b3b3", fontSize: 14 }}>{currentTrack.artist_name}</div>
+            <div className="px-6 pb-8">
+              <div className="flex justify-center mb-6">
+                <img src={currentTrack.image || imgFallback} alt="" className="w-64 h-64 rounded-2xl object-cover shadow-2xl" style={{ boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }} />
               </div>
-              <button onClick={() => toggleLike(currentTrack.id)} className="btn-icon" style={{ color: liked.has(currentTrack.id) ? "#ba55d3" : "#b3b3b3" }}>
-                {liked.has(currentTrack.id) ? Icons.heartFill : Icons.heart}
-              </button>
-            </div>
 
-            {/* Progress */}
-            <div onClick={handleSeek} style={{ height: 4, background: "#535353", borderRadius: 2, marginBottom: 8, cursor: "pointer" }}>
-              <div style={{ height: "100%", background: "#ba55d3", borderRadius: 2, width: `${progressPct}%`, transition: "width 0.1s" }} />
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", color: "#b3b3b3", fontSize: 11, marginBottom: 20 }}>
-              <span>{formatTime(progress)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex-1 overflow-hidden">
+                  <div className="font-bold text-xl mb-1 truncate">{currentTrack.name}</div>
+                  <div className="text-gray-400 text-sm">{currentTrack.artist_name}</div>
+                </div>
+                <button onClick={() => toggleLike(currentTrack.id)} className="icon-btn p-2 rounded-full">
+                  {liked.has(currentTrack.id) ? Icons.heartFill : Icons.heart}
+                </button>
+              </div>
 
-            {/* Controls */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-              <button className={`btn-icon ${shuffle ? "active" : ""}`} onClick={() => setShuffle(s => !s)}>{Icons.shuffle}</button>
-              <button className="btn-icon" style={{ width: 48, height: 48, color: "#fff" }} onClick={() => skip(-1)}>{Icons.prev}</button>
-              <button onClick={() => setPlaying(p => !p)} style={{
-                width: 60, height: 60, borderRadius: "50%",
-                background: "#fff", border: "none", cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                color: "#000", transition: "transform 0.15s",
-              }}
-                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"}
-                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-              >
-                <div style={{ transform: "scale(1.3)" }}>{playing ? Icons.pause : Icons.play}</div>
-              </button>
-              <button className="btn-icon" style={{ width: 48, height: 48, color: "#fff" }} onClick={() => skip(1)}>{Icons.next}</button>
-              <button className={`btn-icon ${repeat ? "active" : ""}`} onClick={() => setRepeat(r => !r)}>{Icons.repeat}</button>
-            </div>
+              <div onClick={handleSeek} className="h-1.5 bg-gray-700 rounded-full mb-2 cursor-pointer relative group">
+                <div className="h-full bg-gradient-to-r from-c084fc to-a855f7 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+                <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-all" style={{ left: `${progressPct}%` }} />
+              </div>
+              <div className="flex justify-between text-gray-400 text-xs mb-6">
+                <span>{formatTime(progress)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
 
-            {/* Volume */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ color: "#b3b3b3" }}>{Icons.volume}</span>
-              <input type="range" min={0} max={1} step={0.01} value={volume}
-                onChange={e => { const v = parseFloat(e.target.value); setVolume(v); if (audioRef.current) audioRef.current.volume = v; }}
-                style={{ flex: 1, accentColor: "#ba55d3" }}
-              />
-            </div>
+              <div className="flex items-center justify-between mb-6">
+                <button className={`icon-btn p-2 ${shuffle ? "text-c084fc" : ""}`} onClick={() => setShuffle(s => !s)}>{Icons.shuffle}</button>
+                <button className="icon-btn p-3" onClick={() => skip(-1)}>{Icons.prev}</button>
+                <button onClick={() => setPlaying(p => !p)} className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-black transition-transform hover:scale-105">
+                  <div className="scale-125">{playing ? Icons.pause : Icons.play}</div>
+                </button>
+                <button className="icon-btn p-3" onClick={() => skip(1)}>{Icons.next}</button>
+                <button className={`icon-btn p-2 ${repeat ? "text-c084fc" : ""}`} onClick={() => setRepeat(r => !r)}>{Icons.repeat}</button>
+              </div>
 
-            {/* Actions */}
-            <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-              <button onClick={() => setShowAddToPlaylist(currentTrack)} style={{ flex: 1, background: "#282828", border: "none", borderRadius: 99, padding: "11px", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
-                + Add to Playlist
-              </button>
-              <button onClick={() => { if (navigator.share) navigator.share({ title: currentTrack.name, text: `Listening to ${currentTrack.name} on Wavely!`, url: window.location.href }); }} style={{ flex: 1, background: "#282828", border: "none", borderRadius: 99, padding: "11px", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                {Icons.share} Share
-              </button>
+              <div className="flex items-center gap-3 mb-6">
+                <button onClick={() => setIsMuted(!isMuted)} className="icon-btn p-1.5">
+                  {isMuted ? Icons.volumeX : Icons.volume}
+                </button>
+                <input type="range" min={0} max={1} step={0.01} value={isMuted ? 0 : volume}
+                  onChange={e => { const v = parseFloat(e.target.value); setVolume(v); if (isMuted) setIsMuted(false); }}
+                  className="flex-1 h-1.5 rounded-full accent-c084fc"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={() => setShowAddToPlaylist(currentTrack)} className="flex-1 bg-white/10 rounded-full py-3 text-sm font-semibold hover:bg-white/15 transition">+ Add to Playlist</button>
+                <button onClick={() => { if (navigator.share) navigator.share({ title: currentTrack.name, text: `Listening to ${currentTrack.name} on Wavely!` }); }} className="flex-1 bg-white/10 rounded-full py-3 text-sm font-semibold hover:bg-white/15 transition flex items-center justify-center gap-1">
+                  {Icons.share} Share
+                </button>
+              </div>
             </div>
           </div>
         </>
       )}
 
       {/* HEADER */}
-      <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#121212", borderBottom: "1px solid #282828", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <button className="btn-icon" onClick={() => setSidebarOpen(true)} style={{ color: "#fff" }}>{Icons.menu}</button>
-        <span style={{ fontWeight: 700, fontSize: 17, letterSpacing: -0.3 }}>Wavely</span>
-        <a href="/profile" style={{ width: 32, height: 32, borderRadius: "50%", background: "#535353", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700 }}>
+      <div className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center justify-between">
+        <button className="icon-btn p-2 rounded-full" onClick={() => setSidebarOpen(true)}>{Icons.menu}</button>
+        <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-c084fc to-e9d5ff bg-clip-text text-transparent">Wavely</span>
+        <a href="/profile" className="w-9 h-9 rounded-full bg-gradient-to-r from-c084fc to-a855f7 flex items-center justify-center text-sm font-bold">
           {displayName[0]?.toUpperCase()}
         </a>
       </div>
 
       {/* MAIN CONTENT */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 180px", position: "relative" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "20px 20px 100px", position: "relative" }}>
 
         {/* HOME */}
         {activeTab === "home" && (
           <div className="fade-up">
-            {/* Search bar */}
-            <div onClick={() => setActiveTab("search")} style={{ background: "#282828", borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", gap: 10, marginBottom: 20, cursor: "pointer", transition: "background 0.15s" }}
-              onMouseEnter={e => e.currentTarget.style.background = "#3e3e3e"}
-              onMouseLeave={e => e.currentTarget.style.background = "#282828"}
-            >
-              <span style={{ color: "#b3b3b3" }}>{Icons.search}</span>
-              <span style={{ color: "#b3b3b3", fontSize: 14 }}>Search songs, artists...</span>
+            <div onClick={() => setActiveTab("search")} className="glass-card rounded-xl p-3 flex items-center gap-3 mb-6 cursor-pointer hover:bg-white/5 transition-all">
+              <span className="text-gray-400">{Icons.search}</span>
+              <span className="text-gray-400 text-sm">Search songs, artists...</span>
             </div>
 
-            {/* Genre pills */}
-            <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 20, scrollbarWidth: "none" }}>
+            <div className="flex gap-2 overflow-x-auto pb-3 mb-6 scrollbar-hide">
               {GENRES.map((g, i) => (
-                <button key={i} className="genre-pill" onClick={() => switchGenre(i)} style={{
-                  background: activeGenre === i ? "#ba55d3" : "#282828",
+                <button key={i} className="genre-pill px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all" onClick={() => switchGenre(i)} style={{
+                  background: activeGenre === i ? "#c084fc" : "#1f1f1f",
                   color: activeGenre === i ? "#000" : "#fff",
-                  flexShrink: 0,
+                  boxShadow: activeGenre === i ? "0 0 12px rgba(192,132,252,0.4)" : "none",
                 }}>{g.label}</button>
               ))}
             </div>
 
-            {/* Loading */}
             {loading && (
-              <div style={{ textAlign: "center", padding: "60px 0", color: "#b3b3b3" }}>
-                <div style={{ fontSize: 32, animation: "spin 1s linear infinite", display: "inline-block", marginBottom: 12 }}>🎵</div>
-                <div>Loading...</div>
+              <div className="text-center py-16">
+                <div className="text-4xl animate-spin inline-block mb-3">🎵</div>
+                <div className="text-gray-400">Loading...</div>
               </div>
             )}
 
-            {/* Featured */}
             {!loading && featuredTrack && (
               <>
-                <div style={{ background: "linear-gradient(135deg, #1a3a2a, #1e1e1e)", borderRadius: 12, padding: 16, marginBottom: 20, display: "flex", gap: 14, alignItems: "center" }}>
-                  <img src={featuredTrack.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }}
-                    style={{ width: 80, height: 80, borderRadius: 8, objectFit: "cover", flexShrink: 0, boxShadow: "0 8px 24px #00000066" }} />
-                  <div style={{ flex: 1, overflow: "hidden" }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#ba55d3", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Featured Track</div>
-                    <div style={{ fontWeight: 700, fontSize: 17, letterSpacing: -0.3, marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{featuredTrack.name}</div>
-                    <div style={{ color: "#b3b3b3", fontSize: 13, marginBottom: 12 }}>{featuredTrack.artist_name}</div>
-                    <button onClick={() => playTrack(featuredTrack)} style={{
-                      background: "#ba55d3", border: "none", borderRadius: 99,
-                      padding: "8px 20px", color: "#000", fontWeight: 700,
-                      fontSize: 13, cursor: "pointer", fontFamily: "inherit",
-                      display: "flex", alignItems: "center", gap: 6, transition: "transform 0.15s",
-                    }}
-                      onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"}
-                      onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-                    >
-                      {currentTrack?.id === featuredTrack.id && playing ? Icons.pause : Icons.play}
-                      {currentTrack?.id === featuredTrack.id && playing ? "Pause" : "Play"}
-                    </button>
+                <div className="gradient-border mb-6" style={{ borderRadius: 20 }}>
+                  <div style={{ padding: 1, borderRadius: 19 }}>
+                    <div className="rounded-[19px] p-5 flex gap-4" style={{ background: "linear-gradient(135deg, #1a1a2e, #0f0f0f)" }}>
+                      <img src={featuredTrack.image || imgFallback} alt="" className="w-20 h-20 rounded-xl object-cover shadow-lg flex-shrink-0" />
+                      <div className="flex-1 overflow-hidden">
+                        <div className="text-xs font-bold text-c084fc uppercase tracking-wider mb-1">Featured Track</div>
+                        <div className="font-bold text-lg truncate mb-1">{featuredTrack.name}</div>
+                        <div className="text-gray-400 text-sm mb-3">{featuredTrack.artist_name}</div>
+                        <button onClick={() => playTrack(featuredTrack)} className="bg-c084fc rounded-full px-5 py-1.5 text-black font-bold text-sm flex items-center gap-2 transition-transform hover:scale-105">
+                          {currentTrack?.id === featuredTrack.id && playing ? Icons.pause : Icons.play}
+                          {currentTrack?.id === featuredTrack.id && playing ? "Pause" : "Play Now"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Track list */}
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: "#b3b3b3", textTransform: "uppercase", marginBottom: 12 }}>
-                  {GENRES[activeGenre].label}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column" }}>
+                <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-1">Popular • {GENRES[activeGenre].label}</div>
+                <div className="flex flex-col gap-1">
                   {tracks.map(track => <TrackRow key={track.id} track={track} />)}
                 </div>
               </>
             )}
 
             {!loading && !featuredTrack && (
-              <div style={{ textAlign: "center", padding: "60px 20px", color: "#b3b3b3" }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>😕</div>
-                <div style={{ fontWeight: 600, marginBottom: 8 }}>No tracks found</div>
-                <button onClick={() => fetchTracks(GENRES[activeGenre].tag)} style={{ background: "#ba55d3", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Try Again</button>
+              <div className="text-center py-16">
+                <div className="text-5xl mb-3">😕</div>
+                <div className="font-semibold mb-2">No tracks found</div>
+                <button onClick={() => fetchTracks(GENRES[activeGenre].tag)} className="bg-c084fc rounded-full px-6 py-2 text-black font-semibold">Try Again</button>
               </div>
             )}
           </div>
@@ -767,50 +722,38 @@ export default function Dashboard() {
         {/* LIBRARY */}
         {activeTab === "library" && (
           <div className="fade-up">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-              <h2 style={{ fontWeight: 700, fontSize: 22, letterSpacing: -0.5 }}>Your Library</h2>
-              <button onClick={() => setShowNewPlaylist(true)} style={{ background: "#ba55d3", border: "none", borderRadius: 99, padding: "8px 16px", color: "#000", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-2xl font-bold tracking-tight">Your Library</h2>
+              <button onClick={() => setShowNewPlaylist(true)} className="bg-c084fc rounded-full px-4 py-2 text-black font-bold text-sm flex items-center gap-1">
                 {Icons.plus} New
               </button>
             </div>
 
             {playlists.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 20px", background: "#1e1e1e", borderRadius: 12 }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>🎵</div>
-                <div style={{ fontWeight: 600, marginBottom: 8 }}>No playlists yet</div>
-                <div style={{ color: "#b3b3b3", fontSize: 13, marginBottom: 20 }}>Create your first playlist!</div>
-                <button onClick={() => setShowNewPlaylist(true)} style={{ background: "#ba55d3", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create Playlist</button>
+              <div className="text-center py-12 bg-white/5 rounded-2xl">
+                <div className="text-5xl mb-3">🎵</div>
+                <div className="font-semibold mb-2">No playlists yet</div>
+                <div className="text-gray-400 text-sm mb-4">Create your first playlist!</div>
+                <button onClick={() => setShowNewPlaylist(true)} className="bg-c084fc rounded-full px-6 py-2 text-black font-semibold">Create Playlist</button>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div className="flex flex-col gap-3">
                 {playlists.map(pl => (
-                  <div key={pl.id} style={{ background: "#1e1e1e", borderRadius: 10, padding: 14, display: "flex", alignItems: "center", gap: 12, cursor: "pointer", transition: "background 0.15s" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#282828"}
-                    onMouseLeave={e => e.currentTarget.style.background = "#1e1e1e"}
-                    onClick={() => { setActivePlaylist(pl); setActiveTab("playlist"); }}
-                  >
-                    <div style={{ width: 52, height: 52, borderRadius: 8, background: "#282828", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                      {pl.tracks[0] ? <img src={pl.tracks[0].image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.target as HTMLImageElement).src = imgFallback; }} /> : <span style={{ fontSize: 22 }}>🎵</span>}
+                  <div key={pl.id} className="group bg-white/5 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-white/10 transition-all" onClick={() => { setActivePlaylist(pl); setActiveTab("playlist"); }}>
+                    <div className="w-14 h-14 rounded-xl bg-[#1f1f1f] flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {pl.tracks[0] ? <img src={pl.tracks[0].image} alt="" className="w-full h-full object-cover" /> : <span className="text-2xl">🎵</span>}
                     </div>
-                    <div style={{ flex: 1, overflow: "hidden" }}>
-                      <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{pl.name}</div>
-                      <div style={{ color: "#b3b3b3", fontSize: 12, display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ display: "flex" }}>{pl.isPublic ? Icons.unlock : Icons.lock}</span>
+                    <div className="flex-1 overflow-hidden">
+                      <div className="font-semibold text-base truncate">{pl.name}</div>
+                      <div className="text-gray-400 text-xs flex items-center gap-1">
+                        {pl.isPublic ? Icons.unlock : Icons.lock}
                         {pl.isPublic ? "Public" : "Private"} · {pl.tracks.length} songs
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: 4 }} onClick={e => e.stopPropagation()}>
-                      <button className="btn-icon" onClick={() => togglePublic(pl.id)} title={pl.isPublic ? "Make private" : "Make public"} style={{ color: pl.isPublic ? "#ba55d3" : "#b3b3b3" }}>
-                        {pl.isPublic ? Icons.unlock : Icons.lock}
-                      </button>
-                      {pl.isPublic && (
-                        <button className="btn-icon" onClick={() => copyPlaylistLink(pl.id)} title="Copy link">
-                          {Icons.copy}
-                        </button>
-                      )}
-                      <button className="btn-icon" onClick={() => deletePlaylist(pl.id)} style={{ color: "#ff4444" }}>
-                        {Icons.trash}
-                      </button>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                      <button className="icon-btn p-2 rounded-full" onClick={() => togglePublic(pl.id)}>{pl.isPublic ? Icons.unlock : Icons.lock}</button>
+                      {pl.isPublic && <button className="icon-btn p-2 rounded-full" onClick={() => copyPlaylistLink(pl.id)}>{Icons.copy}</button>}
+                      <button className="icon-btn p-2 rounded-full text-red-400" onClick={() => deletePlaylist(pl.id)}>{Icons.trash}</button>
                     </div>
                   </div>
                 ))}
@@ -822,64 +765,55 @@ export default function Dashboard() {
         {/* PLAYLIST VIEW */}
         {activeTab === "playlist" && activePlaylist && (
           <div className="fade-up">
-            <button onClick={() => setActiveTab("library")} style={{ background: "none", border: "none", color: "#b3b3b3", cursor: "pointer", fontSize: 13, marginBottom: 16, display: "flex", alignItems: "center", gap: 6, fontFamily: "inherit" }}>
-              ← Back
-            </button>
-            <div style={{ display: "flex", gap: 16, alignItems: "flex-end", marginBottom: 24 }}>
-              <div style={{ width: 100, height: 100, borderRadius: 10, background: "#282828", flexShrink: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px #00000066" }}>
-                {activePlaylist.tracks[0] ? <img src={activePlaylist.tracks[0].image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.target as HTMLImageElement).src = imgFallback; }} /> : <span style={{ fontSize: 36 }}>🎵</span>}
+            <button onClick={() => setActiveTab("library")} className="text-gray-400 text-sm flex items-center gap-1 mb-4 hover:text-white transition">← Back to Library</button>
+            <div className="flex gap-5 items-end mb-6">
+              <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-c084fc to-a855f7 flex items-center justify-center shadow-xl flex-shrink-0 overflow-hidden">
+                {activePlaylist.tracks[0] ? <img src={activePlaylist.tracks[0].image} alt="" className="w-full h-full object-cover" /> : <span className="text-4xl">🎵</span>}
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#b3b3b3", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Playlist</div>
-                <h2 style={{ fontWeight: 800, fontSize: 22, letterSpacing: -0.5, marginBottom: 6 }}>{activePlaylist.name}</h2>
-                <div style={{ color: "#b3b3b3", fontSize: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <div className="flex-1">
+                <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Playlist</div>
+                <h2 className="text-2xl font-bold mt-1 mb-1">{activePlaylist.name}</h2>
+                <div className="text-gray-400 text-sm flex items-center gap-2 flex-wrap">
+                  <span className="flex items-center gap-1">
                     {activePlaylist.isPublic ? Icons.unlock : Icons.lock}
                     {activePlaylist.isPublic ? "Public" : "Private"}
                   </span>
-                  <span>· {activePlaylist.tracks.length} songs</span>
+                  <span>• {activePlaylist.tracks.length} songs</span>
                   {activePlaylist.isPublic && (
-                    <button onClick={() => copyPlaylistLink(activePlaylist.id)} style={{ background: "none", border: "none", color: "#ba55d3", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 4, fontFamily: "inherit" }}>
-                      {Icons.copy} Copy Link
-                    </button>
+                    <button onClick={() => copyPlaylistLink(activePlaylist.id)} className="text-c084fc text-xs flex items-center gap-1 hover:underline">Copy Link</button>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Actions */}
-            <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+            <div className="flex gap-3 mb-6">
               {activePlaylist.tracks.length > 0 && (
-                <button onClick={() => { setCurrentTrack(activePlaylist.tracks[0]); setPlaying(true); }} style={{ background: "#ba55d3", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }}>
+                <button onClick={() => { setCurrentTrack(activePlaylist.tracks[0]); setPlaying(true); }} className="bg-c084fc rounded-full px-5 py-2 text-black font-bold text-sm flex items-center gap-2">
                   {Icons.play} Play All
                 </button>
               )}
-              <button onClick={() => togglePublic(activePlaylist.id)} style={{ background: "#282828", border: "none", borderRadius: 99, padding: "10px 16px", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
+              <button onClick={() => togglePublic(activePlaylist.id)} className="bg-white/10 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white/15 transition flex items-center gap-1">
                 {activePlaylist.isPublic ? Icons.lock : Icons.unlock}
                 {activePlaylist.isPublic ? "Make Private" : "Make Public"}
               </button>
             </div>
 
             {activePlaylist.tracks.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 20px", color: "#b3b3b3" }}>
-                <div style={{ fontSize: 40, marginBottom: 12 }}>🎵</div>
-                <div>No songs yet. Search and add songs!</div>
-                <button onClick={() => setActiveTab("search")} style={{ background: "#ba55d3", border: "none", borderRadius: 99, padding: "10px 24px", color: "#000", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", marginTop: 16 }}>Find Music</button>
+              <div className="text-center py-12 bg-white/5 rounded-2xl">
+                <div className="text-4xl mb-3">🎵</div>
+                <div className="text-gray-400 mb-3">No songs yet.</div>
+                <button onClick={() => setActiveTab("search")} className="bg-c084fc rounded-full px-6 py-2 text-black font-semibold">Find Music</button>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column" }}>
+              <div className="flex flex-col gap-1">
                 {activePlaylist.tracks.map(track => (
-                  <div key={track.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 12px", borderRadius: 8, cursor: "pointer", transition: "background 0.15s" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#ffffff08"}
-                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                    onClick={() => playTrack(track)}
-                  >
-                    <img src={track.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }} style={{ width: 42, height: 42, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
-                    <div style={{ flex: 1, overflow: "hidden" }}>
-                      <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#4b0082" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.name}</div>
-                      <div style={{ color: "#b3b3b3", fontSize: 12 }}>{track.artist_name}</div>
+                  <div key={track.id} className="flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-all" onClick={() => playTrack(track)}>
+                    <img src={track.image || imgFallback} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                    <div className="flex-1 overflow-hidden">
+                      <div className="font-medium text-sm truncate">{track.name}</div>
+                      <div className="text-gray-400 text-xs">{track.artist_name}</div>
                     </div>
-                    <button onClick={e => { e.stopPropagation(); removeFromPlaylist(activePlaylist.id, track.id); }} className="btn-icon" style={{ color: "#ff4444" }}>
+                    <button onClick={e => { e.stopPropagation(); removeFromPlaylist(activePlaylist.id, track.id); }} className="icon-btn p-2 rounded-full text-red-400">
                       {Icons.trash}
                     </button>
                   </div>
@@ -892,20 +826,20 @@ export default function Dashboard() {
         {/* LIKED SONGS */}
         {activeTab === "liked" && (
           <div className="fade-up">
-            <div style={{ background: "linear-gradient(135deg, #ba55d3, #6a0dad)", borderRadius: 12, padding: 20, marginBottom: 24, display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ width: 64, height: 64, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>❤️</div>
+            <div className="bg-gradient-to-r from-c084fc/20 to-a855f7/20 rounded-2xl p-5 mb-6 flex items-center gap-4">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-c084fc to-a855f7 flex items-center justify-center text-3xl">❤️</div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: 20 }}>Liked Songs</div>
-                <div style={{ color: "#ffffffbb", fontSize: 13 }}>{liked.size} songs</div>
+                <div className="font-bold text-2xl">Liked Songs</div>
+                <div className="text-gray-300 text-sm">{liked.size} saved songs</div>
               </div>
             </div>
             {liked.size === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 20px", color: "#b3b3b3" }}>
-                <div style={{ fontSize: 40, marginBottom: 12 }}>🎵</div>
-                <div>No liked songs yet. Heart a song to save it!</div>
+              <div className="text-center py-12">
+                <div className="text-5xl mb-3">🎵</div>
+                <div className="text-gray-400">No liked songs yet. Heart a song to save it!</div>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column" }}>
+              <div className="flex flex-col gap-1">
                 {allTracks.filter(track => liked.has(track.id)).map(track => <TrackRow key={track.id} track={track} />)}
               </div>
             )}
@@ -914,35 +848,34 @@ export default function Dashboard() {
 
         {/* ACTIVITY */}
         {activeTab === "activity" && (
-          <div className="fade-up" style={{ textAlign: "center", padding: "60px 20px", color: "#b3b3b3" }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🔔</div>
-            <div style={{ fontWeight: 600, fontSize: 18, color: "#fff", marginBottom: 8 }}>No Activity Yet</div>
-            <div>Join spaces to see what's happening</div>
+          <div className="fade-up text-center py-16">
+            <div className="text-5xl mb-3">🔔</div>
+            <div className="font-semibold text-lg mb-1">No Activity Yet</div>
+            <div className="text-gray-400">Join spaces to see what's happening</div>
           </div>
         )}
       </div>
 
       {/* MINI PLAYER */}
       {currentTrack && (
-        <div className="mini-player" onClick={() => setShowPlayer(true)}>
-          <div style={{ height: 2, background: "#282828" }}>
-            <div style={{ height: "100%", background: "#ba55d3", width: `${progressPct}%`, transition: "width 0.1s" }} />
+        <div className="fixed bottom-14 left-0 right-0 bg-[#0f0f0f]/95 backdrop-blur-xl border-t border-white/10 z-30 cursor-pointer transition-all hover:bg-[#1a1a1a]" onClick={() => setShowPlayer(true)}>
+          <div className="h-0.5 bg-gray-800">
+            <div className="h-full bg-gradient-to-r from-c084fc to-a855f7 transition-all" style={{ width: `${progressPct}%` }} />
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px" }}>
-            <img src={currentTrack.image || imgFallback} alt="" onError={e => { (e.target as HTMLImageElement).src = imgFallback; }}
-              style={{ width: 40, height: 40, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
-            <div style={{ flex: 1, overflow: "hidden" }}>
-              <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#fff" }}>{currentTrack.name}</div>
-              <div style={{ color: "#b3b3b3", fontSize: 11 }}>{currentTrack.artist_name}</div>
+          <div className="flex items-center gap-3 p-3 px-4">
+            <img src={currentTrack.image || imgFallback} alt="" className="w-11 h-11 rounded-lg object-cover" />
+            <div className="flex-1 overflow-hidden">
+              <div className="font-semibold text-sm truncate">{currentTrack.name}</div>
+              <div className="text-gray-400 text-xs">{currentTrack.artist_name}</div>
             </div>
-            <div style={{ display: "flex", gap: 4, alignItems: "center" }} onClick={e => e.stopPropagation()}>
-              <button className="btn-icon" onClick={() => toggleLike(currentTrack.id)} style={{ color: liked.has(currentTrack.id) ? "#ba55d3" : "#b3b3b3" }}>
+            <div className="flex gap-1" onClick={e => e.stopPropagation()}>
+              <button className="icon-btn p-2 rounded-full" onClick={() => toggleLike(currentTrack.id)}>
                 {liked.has(currentTrack.id) ? Icons.heartFill : Icons.heart}
               </button>
-              <button onClick={() => setPlaying(p => !p)} style={{ width: 40, height: 40, borderRadius: "50%", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#000" }}>
+              <button className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-black" onClick={() => setPlaying(p => !p)}>
                 {playing ? Icons.pause : Icons.play}
               </button>
-              <button className="btn-icon" style={{ color: "#fff" }} onClick={() => skip(1)}>{Icons.next}</button>
+              <button className="icon-btn p-2 rounded-full" onClick={() => skip(1)}>{Icons.next}</button>
             </div>
           </div>
         </div>
@@ -950,7 +883,7 @@ export default function Dashboard() {
 
       {/* TOAST */}
       {toast && (
-        <div style={{ position: "fixed", bottom: 90, left: "50%", transform: "translateX(-50%)", background: "#282828", border: "1px solid #535353", borderRadius: 99, padding: "10px 20px", color: "#fff", fontSize: 13, fontWeight: 500, zIndex: 100, whiteSpace: "nowrap", boxShadow: "0 8px 24px #00000066", animation: "toastIn 0.3s ease" }}>
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-[#1f1f1f] border border-white/10 rounded-full px-5 py-2.5 text-white text-sm font-medium z-50 whitespace-nowrap shadow-xl animate-toastIn">
           {toast}
         </div>
       )}
@@ -965,7 +898,7 @@ export default function Dashboard() {
         ].map(tab => (
           <button key={tab.id} className={`nav-btn ${activeTab === tab.id ? "active" : ""}`} onClick={() => setActiveTab(tab.id)}>
             {tab.icon}
-            <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: 0.3 }}>{tab.label.toUpperCase()}</span>
+            <span className="text-[10px] font-semibold tracking-wide">{tab.label.toUpperCase()}</span>
           </button>
         ))}
       </div>
@@ -973,7 +906,7 @@ export default function Dashboard() {
   );
 }
 
-// SEARCH COMPONENT
+// MODERN SEARCH COMPONENT
 function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, liked, toggleLike, setShowAddToPlaylist, Icons }: any) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -1009,88 +942,72 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
     finally { setSearching(false); }
   };
 
-  const quickTags = ["arijit singh", "shreya ghoshal", "bollywood 2024", "lofi hindi", "punjabi hits", "taylor swift", "the weeknd", "bengali songs", "rahman hits", "romantic songs"];
+  const quickTags = ["arijit singh", "shreya ghoshal", "bollywood 2024", "lofi hindi", "punjabi hits", "taylor swift", "the weeknd", "bengali songs"];
 
   return (
     <div className="fade-up">
-      <h2 style={{ fontWeight: 700, fontSize: 22, letterSpacing: -0.5, marginBottom: 16 }}>Search</h2>
-      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+      <h2 className="text-2xl font-bold tracking-tight mb-4">Search</h2>
+      <div className="flex gap-3 mb-6">
         <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && search()}
           placeholder="Artists, songs, albums..."
-          style={{ flex: 1, background: "#282828", border: "2px solid transparent", borderRadius: 8, padding: "12px 16px", color: "#fff", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border-color 0.2s" }}
-          onFocus={e => e.target.style.borderColor = "#ba55d3"}
-          onBlur={e => e.target.style.borderColor = "transparent"}
+          className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-c084fc transition-colors"
         />
-        <button onClick={() => search()} style={{ background: "#ba55d3", border: "none", borderRadius: 8, padding: "0 18px", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: 16 }}>→</button>
+        <button onClick={() => search()} className="bg-gradient-to-r from-c084fc to-a855f7 rounded-xl px-5 font-bold text-black">→</button>
       </div>
 
       {!searched && (
         <>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#b3b3b3", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 }}>Quick Search</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Quick Search</div>
+          <div className="flex flex-wrap gap-2">
             {quickTags.map(tag => (
-              <button key={tag} onClick={() => { setQuery(tag); search(tag); }} style={{ background: "#282828", border: "none", borderRadius: 99, padding: "8px 14px", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "background 0.15s", textTransform: "capitalize" }}
-                onMouseEnter={e => e.currentTarget.style.background = "#3e3e3e"}
-                onMouseLeave={e => e.currentTarget.style.background = "#282828"}
-              >{tag}</button>
+              <button key={tag} onClick={() => { setQuery(tag); search(tag); }} className="bg-white/10 rounded-full px-4 py-2 text-sm hover:bg-white/20 transition-colors">
+                {tag}
+              </button>
             ))}
           </div>
         </>
       )}
 
       {searching && (
-        <div style={{ textAlign: "center", padding: "40px 0", color: "#b3b3b3" }}>
-          <div style={{ fontSize: 28, animation: "spin 1s linear infinite", display: "inline-block", marginBottom: 10 }}>🎵</div>
-          <div>Searching...</div>
+        <div className="text-center py-12">
+          <div className="text-3xl animate-spin inline-block mb-2">🎵</div>
+          <div className="text-gray-400">Searching...</div>
         </div>
       )}
 
       {searched && !searching && results.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 0", color: "#b3b3b3" }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>😕</div>
-          <div>No results for "{query}"</div>
+        <div className="text-center py-12">
+          <div className="text-5xl mb-2">😕</div>
+          <div className="text-gray-400">No results for "{query}"</div>
         </div>
       )}
 
       {results.length > 0 && (
         <>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#b3b3b3", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 }}>
-            {results.length} results
-          </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{results.length} results</div>
+          <div className="flex flex-col gap-1">
             {results.map((track: any) => (
-              <div key={track.id} onClick={() => playTrack(track)} style={{
-                display: "flex", alignItems: "center", gap: 12,
-                padding: "8px 12px", borderRadius: 8, cursor: "pointer",
-                background: currentTrack?.id === track.id ? "#ffffff12" : "transparent",
-                transition: "background 0.15s",
-              }}
-                onMouseEnter={e => { if (currentTrack?.id !== track.id) e.currentTarget.style.background = "#ffffff08"; }}
-                onMouseLeave={e => { if (currentTrack?.id !== track.id) e.currentTarget.style.background = "transparent"; }}
-              >
-                <div style={{ position: "relative", flexShrink: 0 }}>
-                  <img src={track.image || imgFallback} alt="" onError={(e: any) => { e.target.src = imgFallback; }}
-                    style={{ width: 42, height: 42, borderRadius: 6, objectFit: "cover" }} />
+              <div key={track.id} onClick={() => playTrack(track)} className="flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-white/5 transition-all">
+                <div className="relative flex-shrink-0">
+                  <img src={track.image || imgFallback} alt="" className="w-11 h-11 rounded-lg object-cover" />
                   {currentTrack?.id === track.id && playing && (
-                    <div style={{ position: "absolute", inset: 0, borderRadius: 6, background: "#00000088", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 14 }}>
-                        {[0, 1, 2].map((j: number) => <div key={j} style={{ width: 3, borderRadius: 2, background: "#4b0082", height: "100%", animation: `waveAnim ${0.5 + j * 0.15}s ${j * 0.1}s ease-in-out infinite` }} />)}
+                    <div className="absolute inset-0 rounded-lg bg-black/60 flex items-center justify-center">
+                      <div className="flex gap-1.5 items-end h-3">
+                        {[0, 1, 2].map((j: number) => <div key={j} className="w-1 bg-c084fc rounded-full animate-wave" style={{ height: "100%", animation: `waveAnim ${0.5 + j * 0.15}s infinite` }} />)}
                       </div>
                     </div>
                   )}
                 </div>
-                <div style={{ flex: 1, overflow: "hidden" }}>
-                  <div style={{ fontWeight: 500, fontSize: 14, color: currentTrack?.id === track.id ? "#4b0082" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 2 }}>{track.name}</div>
-                  <div style={{ color: "#b3b3b3", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.artist_name}</div>
+                <div className="flex-1 overflow-hidden">
+                  <div className="font-medium text-sm truncate">{track.name}</div>
+                  <div className="text-gray-400 text-xs">{track.artist_name}</div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }} onClick={(e: any) => e.stopPropagation()}>
-                  <button onClick={() => toggleLike(track.id)} style={{ background: "none", border: "none", cursor: "pointer", color: liked.has(track.id) ? "#4b0082" : "#b3b3b3", display: "flex", padding: 4 }}>
+                <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                  <button onClick={() => toggleLike(track.id)} className="icon-btn p-2 rounded-full">
                     {liked.has(track.id) ? Icons.heartFill : Icons.heart}
                   </button>
-                  <span style={{ color: "#b3b3b3", fontSize: 12 }}>{formatTime(track.duration)}</span>
-                  <button onClick={() => setShowAddToPlaylist(track)} style={{ background: "none", border: "none", cursor: "pointer", color: "#b3b3b3", display: "flex", padding: 4 }}>
-                    {Icons.dots}
-                  </button>
+                  <span className="text-gray-400 text-xs font-mono">{formatTime(track.duration)}</span>
+                  <button onClick={() => setShowAddToPlaylist(track)} className="icon-btn p-2 rounded-full">{Icons.dots}</button>
                 </div>
               </div>
             ))}
