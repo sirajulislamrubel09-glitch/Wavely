@@ -14,25 +14,18 @@ export default function PlayerPage() {
   const [downloaded, setDownloaded] = useState(false);
   const [isApp, setIsApp] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Get track from URL params or localStorage
   const [track, setTrack] = useState<any>(null);
 
   useEffect(() => {
-    // Check if running as PWA app
     const isPWA = window.matchMedia("(display-mode: standalone)").matches
       || (window.navigator as any).standalone === true;
     setIsApp(isPWA);
-
-    // Get current track from localStorage
     const stored = localStorage.getItem("wavely_current_track");
     if (stored) {
       try {
         setTrack(JSON.parse(stored));
       } catch (e) {}
     }
-
-    // Listen for track changes
     const handler = () => {
       const t = localStorage.getItem("wavely_current_track");
       if (t) setTrack(JSON.parse(t));
@@ -131,16 +124,16 @@ export default function PlayerPage() {
 
   return (
     <div style={{
-      background: "#080810",
+      background: "#0a0a12",
       minHeight: "100vh",
       fontFamily: "'Sora', system-ui, sans-serif",
-      color: "#e8e8f8",
+      color: "#ffffff",
       display: "flex",
       flexDirection: "column",
       position: "relative",
-      overflow: "hidden",
       maxWidth: 480,
       margin: "0 auto",
+      boxShadow: "0 0 40px rgba(0,0,0,0.5)",
     }}>
       <audio
         ref={audioRef}
@@ -150,344 +143,328 @@ export default function PlayerPage() {
       />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-        @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
         @keyframes waveform { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
-        @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes slide-up { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
-        .fade-up { animation: fade-up 0.5s ease forwards; }
-        .float-anim { animation: float 3s ease-in-out infinite; }
-
-        .icon-btn {
-          background: none; border: none;
-          cursor: pointer; transition: all 0.2s;
-          display: flex; align-items: center; justify-content: center;
-          border-radius: 50%;
-        }
-        .icon-btn:hover { transform: scale(1.1); }
-        .icon-btn:active { transform: scale(0.9); }
-
-        .play-btn {
-          border: none; border-radius: 50%;
-          cursor: pointer; transition: all 0.2s;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .play-btn:hover { transform: scale(1.05); }
-        .play-btn:active { transform: scale(0.95); }
+        .float-anim { animation: float-gentle 3s ease-in-out infinite; }
+        .wave-bar { animation: waveform 0.6s ease-in-out infinite; }
+        .slide-up { animation: slide-up 0.3s ease-out; }
 
         input[type='range'] {
           -webkit-appearance: none;
           appearance: none;
           width: 100%; height: 4px;
-          border-radius: 2px; outline: none;
+          border-radius: 4px;
+          background: #2a2a3a;
+          outline: none;
           cursor: pointer;
         }
         input[type='range']::-webkit-slider-thumb {
           -webkit-appearance: none;
-          width: 16px; height: 16px;
+          width: 14px; height: 14px;
           border-radius: 50%;
-          background: white;
-          box-shadow: 0 0 8px #7c3aed88;
+          background: #c084fc;
+          box-shadow: 0 0 8px #c084fc;
           cursor: pointer;
         }
-
-        .queue-sheet {
-          position: fixed; bottom: 0; left: 0; right: 0;
-          background: #12121e; border-radius: 24px 24px 0 0;
-          border-top: 1px solid #7c3aed33;
-          padding: 20px 16px 40px;
-          z-index: 50; max-height: 70vh;
-          overflow-y: auto;
-          animation: slide-up 0.3s ease;
-          max-width: 480px; margin: 0 auto;
+        .time-range {
+          background: linear-gradient(to right, #c084fc ${progressPct}%, #2a2a3a ${progressPct}%);
         }
 
-        .download-btn {
-          display: flex; align-items: center; gap: 8px;
-          border-radius: 99px; padding: 10px 20px;
-          font-size: 13px; font-weight: 700;
-          cursor: pointer; transition: all 0.2s;
-          font-family: 'Sora', system-ui;
+        .icon-btn {
+          background: rgba(255,255,255,0.08);
           border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          backdrop-filter: blur(8px);
+        }
+        .icon-btn:hover { transform: scale(1.08); background: rgba(192,132,252,0.2); }
+        .icon-btn:active { transform: scale(0.95); }
+
+        .play-btn {
+          background: linear-gradient(135deg, #c084fc, #a855f7);
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 8px 20px rgba(192,132,252,0.4);
+        }
+        .play-btn:hover { transform: scale(1.05); box-shadow: 0 12px 28px rgba(192,132,252,0.5); }
+        .play-btn:active { transform: scale(0.98); }
+
+        .download-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          border-radius: 99px;
+          padding: 10px 18px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-family: 'Sora', system-ui;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.05);
+          backdrop-filter: blur(10px);
+        }
+        .download-btn:hover { background: rgba(192,132,252,0.2); border-color: rgba(192,132,252,0.4); }
+
+        .queue-sheet {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: rgba(18,18,30,0.98);
+          backdrop-filter: blur(20px);
+          border-radius: 24px 24px 0 0;
+          border-top: 1px solid rgba(192,132,252,0.3);
+          padding: 20px 16px 32px;
+          z-index: 50;
+          max-height: 70vh;
+          overflow-y: auto;
+          max-width: 480px;
+          margin: 0 auto;
+          animation: slide-up 0.3s ease;
         }
       `}</style>
 
-      {/* Dynamic background */}
-      <div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
-        {/* Blurred album art background */}
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `url(${track.image || imgFallback})`,
-          backgroundSize: "cover", backgroundPosition: "center",
-          filter: "blur(40px) brightness(0.3)",
-          transform: "scale(1.2)",
-        }} />
-        {/* Dark overlay */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, #08081088 0%, #080810cc 60%, #080810 100%)" }} />
-      </div>
-
-      {/* HEADER */}
+      {/* Blurred background overlay */}
       <div style={{
-        position: "relative", zIndex: 1,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "52px 20px 16px",
-      }}>
-        <a href="/dashboard" style={{
-          width: 38, height: 38, borderRadius: "50%",
-          background: "#ffffff15", backdropFilter: "blur(10px)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 18, color: "white", textDecoration: "none",
-        }}>↓</a>
+        position: "fixed",
+        inset: 0,
+        zIndex: 0,
+        backgroundImage: `url(${track.image || imgFallback})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        filter: "blur(60px) brightness(0.2)",
+        transform: "scale(1.2)",
+      }} />
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 1,
+        background: "linear-gradient(135deg, rgba(10,10,18,0.7), rgba(10,10,18,0.95))",
+      }} />
 
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#ffffff88", textTransform: "uppercase" }}>
-            Now Playing
+      {/* Main content */}
+      <div style={{ position: "relative", zIndex: 2, flex: 1, display: "flex", flexDirection: "column", padding: "20px 20px 30px" }}>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+          <a href="/dashboard" className="icon-btn" style={{ width: 40, height: 40, fontSize: 20, textDecoration: "none", color: "#fff" }}>←</a>
+          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 2, color: "#c084fc", textTransform: "uppercase" }}>NOW PLAYING</div>
+          <button className="icon-btn" onClick={() => setShowQueue(true)} style={{ width: 40, height: 40, fontSize: 20, color: "#fff" }}>⋯</button>
+        </div>
+
+        {/* Album Art with rotation when playing */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
+          <div className={playing ? "float-anim" : ""} style={{
+            width: "min(280px, 70vw)",
+            aspectRatio: "1",
+            borderRadius: 28,
+            background: "linear-gradient(135deg, #2a1a4a, #1a1a2e)",
+            boxShadow: playing
+              ? "0 30px 60px rgba(192,132,252,0.3), 0 0 0 4px rgba(192,132,252,0.2)"
+              : "0 20px 40px rgba(0,0,0,0.5)",
+            transition: "box-shadow 0.3s",
+            overflow: "hidden",
+          }}>
+            <img
+              src={track.image || imgFallback}
+              alt={track.name}
+              onError={e => (e.target as HTMLImageElement).src = imgFallback}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                animation: playing ? "spin-slow 20s linear infinite" : "none",
+              }}
+            />
           </div>
         </div>
 
-        <button className="icon-btn" onClick={() => setShowQueue(true)} style={{
-          width: 38, height: 38,
-          background: "#ffffff15", backdropFilter: "blur(10px)",
-          color: "white", fontSize: 16,
-        }}>⋯</button>
-      </div>
-
-      {/* ALBUM ART */}
-      <div style={{
-        position: "relative", zIndex: 1,
-        display: "flex", justifyContent: "center",
-        padding: "20px 32px 28px",
-      }}>
-        <div className={playing ? "float-anim" : ""} style={{
-          width: "100%", maxWidth: 300,
-          aspectRatio: "1",
-          borderRadius: 24,
-          overflow: "hidden",
-          boxShadow: playing
-            ? "0 20px 80px #7c3aed66, 0 0 40px #7c3aed44"
-            : "0 20px 60px #00000088",
-          transition: "box-shadow 0.5s ease",
-          border: "2px solid #ffffff15",
-        }}>
-          <img
-            src={track.image || imgFallback}
-            alt={track.name}
-            onError={e => { (e.target as HTMLImageElement).src = imgFallback; }}
+        {/* Track Info & Like */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+          <div style={{ flex: 1 }}>
+            <h1 style={{
+              fontSize: "clamp(20px, 6vw, 26px)",
+              fontWeight: 800,
+              letterSpacing: -0.5,
+              marginBottom: 6,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}>{track.name}</h1>
+            <p style={{
+              fontSize: 15,
+              color: "#b0b0d0",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}>{track.artist_name}</p>
+            {track.album_name && (
+              <p style={{ fontSize: 12, color: "#7070a0", marginTop: 4 }}>{track.album_name}</p>
+            )}
+          </div>
+          <button
+            className="icon-btn"
+            onClick={() => setLiked(l => !l)}
             style={{
-              width: "100%", height: "100%",
-              objectFit: "cover",
-              animation: playing ? "spin 20s linear infinite" : "none",
-              transition: "animation 0.3s",
+              width: 48,
+              height: 48,
+              fontSize: 22,
+              background: liked ? "rgba(192,132,252,0.2)" : "rgba(255,255,255,0.06)",
+              border: `1px solid ${liked ? "#c084fc" : "rgba(255,255,255,0.1)"}`,
+              color: liked ? "#c084fc" : "#fff",
             }}
-          />
-        </div>
-      </div>
-
-      {/* TRACK INFO */}
-      <div style={{
-        position: "relative", zIndex: 1,
-        padding: "0 24px 20px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-      }}>
-        <div style={{ flex: 1, overflow: "hidden", marginRight: 16 }}>
-          <h1 style={{
-            fontSize: 24, fontWeight: 800, letterSpacing: -0.5,
-            marginBottom: 6, whiteSpace: "nowrap",
-            overflow: "hidden", textOverflow: "ellipsis",
-          }}>{track.name}</h1>
-          <p style={{
-            color: "#a0a0c0", fontSize: 15, fontWeight: 500,
-            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-          }}>{track.artist_name}</p>
-          {track.album_name && (
-            <p style={{ color: "#6060a0", fontSize: 12, marginTop: 2 }}>
-              {track.album_name}
-            </p>
-          )}
+          >
+            {liked ? "❤️" : "♡"}
+          </button>
         </div>
 
-        <button className="icon-btn" onClick={() => setLiked(l => !l)} style={{
-          width: 46, height: 46,
-          background: liked ? "#7c3aed22" : "#ffffff11",
-          border: `1px solid ${liked ? "#7c3aed55" : "#ffffff22"}`,
-          fontSize: 22,
-        }}>
-          {liked ? "💜" : "🤍"}
-        </button>
-      </div>
-
-      {/* PROGRESS */}
-      <div style={{ position: "relative", zIndex: 1, padding: "0 24px 8px" }}>
-        <div style={{ position: "relative", marginBottom: 8 }}>
+        {/* Progress Bar */}
+        <div style={{ marginBottom: 12 }}>
           <input
             type="range"
             min={0}
             max={duration || 30}
             value={progress}
             onChange={handleSeek}
-            style={{
-              background: `linear-gradient(to right, #7c3aed ${progressPct}%, #ffffff22 ${progressPct}%)`,
-            }}
+            style={{ background: `linear-gradient(to right, #c084fc ${progressPct}%, #2a2a3a ${progressPct}%)` }}
           />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, fontSize: 12, color: "#9090b0" }}>
+            <span>{formatTime(progress)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6060a0" }}>
-          <span>{formatTime(progress)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
-      </div>
 
-      {/* CONTROLS */}
-      <div style={{
-        position: "relative", zIndex: 1,
-        padding: "12px 24px 16px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-      }}>
-        {/* Shuffle */}
-        <button className="icon-btn" onClick={() => setShuffled(s => !s)} style={{
-          width: 42, height: 42, fontSize: 20,
-          color: shuffled ? "#a78bfa" : "#6060a0",
-        }}>⇄</button>
+        {/* Waveform Visualizer (only when playing) */}
+        {playing && (
+          <div style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-end",
+            gap: 4,
+            height: 40,
+            marginBottom: 20,
+          }}>
+            {Array.from({ length: 24 }).map((_, i) => (
+              <div
+                key={i}
+                className="wave-bar"
+                style={{
+                  width: 4,
+                  borderRadius: 2,
+                  background: `hsl(${260 + i * 2}, 70%, 65%)`,
+                  animationDelay: `${i * 0.05}s`,
+                  height: `${20 + Math.sin(i * 0.6) * 18}px`,
+                  opacity: 0.8,
+                }}
+              />
+            ))}
+          </div>
+        )}
 
-        {/* Previous */}
-        <button className="icon-btn" style={{
-          width: 52, height: 52, fontSize: 26,
-          color: "#e8e8f8", background: "#ffffff11",
-          border: "1px solid #ffffff22",
-        }}>⏮</button>
-
-        {/* Play/Pause */}
-        <button className="play-btn" onClick={() => setPlaying(p => !p)} style={{
-          width: 72, height: 72,
-          background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-          fontSize: 28, color: "white",
-          boxShadow: "0 0 40px #7c3aed88, 0 8px 32px #7c3aed44",
-        }}>
-          {playing ? "⏸" : "▶"}
-        </button>
-
-        {/* Next */}
-        <button className="icon-btn" style={{
-          width: 52, height: 52, fontSize: 26,
-          color: "#e8e8f8", background: "#ffffff11",
-          border: "1px solid #ffffff22",
-        }}>⏭</button>
-
-        {/* Repeat */}
-        <button className="icon-btn" onClick={() => setRepeated(r => !r)} style={{
-          width: 42, height: 42, fontSize: 20,
-          color: repeated ? "#a78bfa" : "#6060a0",
-        }}>↺</button>
-      </div>
-
-      {/* EXTRA ACTIONS */}
-      <div style={{
-        position: "relative", zIndex: 1,
-        padding: "8px 24px 16px",
-        display: "flex", gap: 12, justifyContent: "center",
-      }}>
-        {/* Download */}
-        <button
-          className="download-btn"
-          onClick={handleDownload}
-          style={{
-            background: downloaded ? "#10b98122" : isApp ? "#7c3aed22" : "#ffffff11",
-            border: `1px solid ${downloaded ? "#10b98144" : isApp ? "#7c3aed44" : "#ffffff22"}`,
-            color: downloaded ? "#10b981" : isApp ? "#a78bfa" : "#6060a0",
-          }}
-        >
-          {downloading ? (
-            <span style={{ animation: "spin 1s linear infinite", display: "inline-block" }}>⟳</span>
-          ) : downloaded ? "✅" : "⬇️"}
-          {downloading ? "Downloading..." : downloaded ? "Downloaded!" : isApp ? "Download" : "Install app to download"}
-        </button>
-
-        {/* Share */}
-        <button
-          className="download-btn"
-          onClick={() => {
-            if (navigator.share) {
-              navigator.share({ title: track.name, text: `Listening to ${track.name} by ${track.artist_name} on Wavely!`, url: window.location.href });
-            }
-          }}
-          style={{
-            background: "#ffffff11",
-            border: "1px solid #ffffff22",
-            color: "#a0a0c0",
-          }}
-        >
-          🔗 Share
-        </button>
-      </div>
-
-      {/* VOLUME */}
-      <div style={{
-        position: "relative", zIndex: 1,
-        padding: "0 24px 24px",
-        display: "flex", alignItems: "center", gap: 12,
-      }}>
-        <span style={{ fontSize: 16 }}>🔈</span>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={e => {
-            const v = parseFloat(e.target.value);
-            setVolume(v);
-            if (audioRef.current) audioRef.current.volume = v;
-          }}
-          style={{
-            flex: 1,
-            background: `linear-gradient(to right, #7c3aed ${volume * 100}%, #ffffff22 ${volume * 100}%)`,
-          }}
-        />
-        <span style={{ fontSize: 16 }}>🔊</span>
-      </div>
-
-      {/* Waveform visualizer */}
-      {playing && (
+        {/* Main Controls */}
         <div style={{
-          position: "relative", zIndex: 1,
-          display: "flex", justifyContent: "center",
-          alignItems: "flex-end", gap: 3,
-          height: 40, padding: "0 24px",
-          marginBottom: 16,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "8px 12px",
+          marginBottom: 20,
         }}>
-          {Array.from({ length: 32 }).map((_, i) => (
-            <div key={i} style={{
-              width: "calc(100% / 36)",
-              maxWidth: 8,
-              borderRadius: 4,
-              background: `hsl(${260 + i * 3}, 70%, 65%)`,
-              animation: `waveform ${0.4 + (i % 5) * 0.12}s ${i * 0.04}s ease-in-out infinite`,
-              height: `${30 + Math.sin(i * 0.8) * 20}px`,
-              opacity: 0.7,
-            }} />
-          ))}
-        </div>
-      )}
+          <button className="icon-btn" onClick={() => setShuffled(s => !s)} style={{
+            width: 44, height: 44, fontSize: 18,
+            color: shuffled ? "#c084fc" : "#9090b0",
+          }}>🔀</button>
 
-      {/* Queue Sheet */}
+          <button className="icon-btn" onClick={() => {
+            // previous track logic (you can implement if needed)
+          }} style={{
+            width: 52, height: 52, fontSize: 24,
+            color: "#fff",
+          }}>⏮</button>
+
+          <button className="play-btn" onClick={() => setPlaying(p => !p)} style={{
+            width: 70, height: 70, fontSize: 30,
+            borderRadius: "50%",
+            color: "#fff",
+          }}>
+            {playing ? "⏸" : "▶"}
+          </button>
+
+          <button className="icon-btn" onClick={() => {
+            // next track logic
+          }} style={{
+            width: 52, height: 52, fontSize: 24,
+            color: "#fff",
+          }}>⏭</button>
+
+          <button className="icon-btn" onClick={() => setRepeated(r => !r)} style={{
+            width: 44, height: 44, fontSize: 18,
+            color: repeated ? "#c084fc" : "#9090b0",
+          }}>🔁</button>
+        </div>
+
+        {/* Extra Actions: Download & Share */}
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 24 }}>
+          <button className="download-btn" onClick={handleDownload}>
+            {downloading ? (
+              <span style={{ animation: "spin-slow 1s linear infinite", display: "inline-block" }}>⟳</span>
+            ) : downloaded ? "✅" : "⬇️"}
+            {downloading ? "Downloading..." : downloaded ? "Downloaded" : (isApp ? "Download" : "Install app to download")}
+          </button>
+          <button className="download-btn" onClick={() => {
+            if (navigator.share) navigator.share({ title: track.name, text: `Listening to ${track.name} on Wavely!`, url: window.location.href });
+          }}>
+            🔗 Share
+          </button>
+        </div>
+
+        {/* Volume Control */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
+          <span style={{ fontSize: 16, color: "#9090b0" }}>🔈</span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={volume}
+            onChange={e => {
+              const v = parseFloat(e.target.value);
+              setVolume(v);
+              if (audioRef.current) audioRef.current.volume = v;
+            }}
+            style={{ background: `linear-gradient(to right, #c084fc ${volume * 100}%, #2a2a3a ${volume * 100}%)` }}
+          />
+          <span style={{ fontSize: 16, color: "#9090b0" }}>🔊</span>
+        </div>
+      </div>
+
+      {/* Queue Sheet (unchanged functionality, only style updated) */}
       {showQueue && (
         <>
-          <div
-            onClick={() => setShowQueue(false)}
-            style={{ position: "fixed", inset: 0, background: "#00000066", zIndex: 40 }}
-          />
+          <div onClick={() => setShowQueue(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", zIndex: 40 }} />
           <div className="queue-sheet">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <div style={{ fontWeight: 800, fontSize: 18 }}>Options</div>
-              <button onClick={() => setShowQueue(false)} style={{ background: "none", border: "none", color: "#6060a0", fontSize: 22, cursor: "pointer" }}>✕</button>
+              <div style={{ fontWeight: 700, fontSize: 18, color: "#fff" }}>Options</div>
+              <button onClick={() => setShowQueue(false)} style={{ background: "none", border: "none", color: "#a0a0c0", fontSize: 22, cursor: "pointer" }}>✕</button>
             </div>
             {[
-              { icon: "💜", label: liked ? "Unlike" : "Like this track", action: () => { setLiked(l => !l); setShowQueue(false); } },
+              { icon: liked ? "❤️" : "♡", label: liked ? "Unlike" : "Like this track", action: () => { setLiked(l => !l); setShowQueue(false); } },
               { icon: "➕", label: "Add to playlist", action: () => { setShowQueue(false); } },
               { icon: "🔗", label: "Share track", action: () => { if (navigator.share) navigator.share({ title: track.name, text: `Listening to ${track.name} on Wavely!`, url: window.location.href }); setShowQueue(false); } },
               { icon: "👤", label: "View artist", action: () => setShowQueue(false) },
@@ -497,11 +474,12 @@ export default function PlayerPage() {
               <div key={i} onClick={item.action} style={{
                 display: "flex", alignItems: "center", gap: 14,
                 padding: "14px 4px", cursor: "pointer",
-                borderBottom: "1px solid #ffffff08",
+                borderBottom: "1px solid rgba(255,255,255,0.05)",
                 transition: "background 0.2s",
+                color: "#e0e0f0",
               }}>
                 <span style={{ fontSize: 20 }}>{item.icon}</span>
-                <span style={{ fontSize: 15, fontWeight: 600 }}>{item.label}</span>
+                <span style={{ fontSize: 15, fontWeight: 500 }}>{item.label}</span>
               </div>
             ))}
           </div>
