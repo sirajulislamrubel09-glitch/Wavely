@@ -15,10 +15,18 @@ export default function PlayerPage() {
   const [isApp, setIsApp] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [track, setTrack] = useState<any>(null);
+  const [showAddPlaylist, setShowAddPlaylist] = useState(false);
+  const [playlists, setPlaylists] = useState<any[]>([]);
+
+  // Load playlists from localStorage (same as dashboard)
+  useEffect(() => {
+    const stored = localStorage.getItem("wavely_playlists");
+    if (stored) setPlaylists(JSON.parse(stored));
+  }, []);
 
   useEffect(() => {
-    const isPWA = window.matchMedia("(display-mode: standalone)").matches
-      || (window.navigator as any).standalone === true;
+    const isPWA = window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
     setIsApp(isPWA);
     const stored = localStorage.getItem("wavely_current_track");
     if (stored) {
@@ -86,6 +94,23 @@ export default function PlayerPage() {
     } finally {
       setDownloading(false);
     }
+  };
+
+  const addToPlaylist = (playlistId: string) => {
+    const playlist = playlists.find(p => p.id === playlistId);
+    if (!playlist) return;
+    const exists = playlist.tracks.some((t: any) => t.id === track.id);
+    if (exists) {
+      alert("Already in this playlist!");
+      return;
+    }
+    const updated = playlists.map(p =>
+      p.id === playlistId ? { ...p, tracks: [...p.tracks, track] } : p
+    );
+    setPlaylists(updated);
+    localStorage.setItem("wavely_playlists", JSON.stringify(updated));
+    setShowAddPlaylist(false);
+    alert(`✅ Added to "${playlist.name}"!`);
   };
 
   const formatTime = (s: number) => {
@@ -159,7 +184,8 @@ export default function PlayerPage() {
         input[type='range'] {
           -webkit-appearance: none;
           appearance: none;
-          width: 100%; height: 4px;
+          width: 100%;
+          height: 4px;
           border-radius: 4px;
           background: #2a2a3a;
           outline: none;
@@ -167,14 +193,12 @@ export default function PlayerPage() {
         }
         input[type='range']::-webkit-slider-thumb {
           -webkit-appearance: none;
-          width: 14px; height: 14px;
+          width: 14px;
+          height: 14px;
           border-radius: 50%;
           background: #c084fc;
           box-shadow: 0 0 8px #c084fc;
           cursor: pointer;
-        }
-        .time-range {
-          background: linear-gradient(to right, #c084fc ${progressPct}%, #2a2a3a ${progressPct}%);
         }
 
         .icon-btn {
@@ -221,6 +245,27 @@ export default function PlayerPage() {
         }
         .download-btn:hover { background: rgba(192,132,252,0.2); border-color: rgba(192,132,252,0.4); }
 
+        /* Modals - always on top */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.7);
+          backdrop-filter: blur(8px);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .modal-content {
+          background: #12121e;
+          border-radius: 28px;
+          padding: 24px;
+          width: 85%;
+          max-width: 340px;
+          border: 1px solid rgba(192,132,252,0.3);
+          box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+          animation: fade-in 0.2s ease;
+        }
         .queue-sheet {
           position: fixed;
           bottom: 0;
@@ -231,7 +276,7 @@ export default function PlayerPage() {
           border-radius: 24px 24px 0 0;
           border-top: 1px solid rgba(192,132,252,0.3);
           padding: 20px 16px 32px;
-          z-index: 50;
+          z-index: 1000;
           max-height: 70vh;
           overflow-y: auto;
           max-width: 480px;
@@ -268,7 +313,7 @@ export default function PlayerPage() {
           <button className="icon-btn" onClick={() => setShowQueue(true)} style={{ width: 40, height: 40, fontSize: 20, color: "#fff" }}>⋯</button>
         </div>
 
-        {/* Album Art with rotation when playing */}
+        {/* Album Art */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
           <div className={playing ? "float-anim" : ""} style={{
             width: "min(280px, 70vw)",
@@ -392,7 +437,7 @@ export default function PlayerPage() {
           }}>🔀</button>
 
           <button className="icon-btn" onClick={() => {
-            // previous track logic (you can implement if needed)
+            // previous track logic - can be extended
           }} style={{
             width: 52, height: 52, fontSize: 24,
             color: "#fff",
@@ -425,7 +470,7 @@ export default function PlayerPage() {
             {downloading ? (
               <span style={{ animation: "spin-slow 1s linear infinite", display: "inline-block" }}>⟳</span>
             ) : downloaded ? "✅" : "⬇️"}
-            {downloading ? "Downloading..." : downloaded ? "Downloaded" : (isApp ? "Download" : "Install app to download")}
+            {downloading ? "Downloading..." : downloaded ? "Downloaded" : (isApp ? "Download" : "Install app")}
           </button>
           <button className="download-btn" onClick={() => {
             if (navigator.share) navigator.share({ title: track.name, text: `Listening to ${track.name} on Wavely!`, url: window.location.href });
@@ -434,30 +479,78 @@ export default function PlayerPage() {
           </button>
         </div>
 
-        {/* Volume Control */}
+        {/* Volume Control - FIXED */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
           <span style={{ fontSize: 16, color: "#9090b0" }}>🔈</span>
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.01}
-            value={volume}
-            onChange={e => {
-              const v = parseFloat(e.target.value);
-              setVolume(v);
-              if (audioRef.current) audioRef.current.volume = v;
-            }}
-            style={{ background: `linear-gradient(to right, #c084fc ${volume * 100}%, #2a2a3a ${volume * 100}%)` }}
-          />
+          <div style={{ flex: 1, position: "relative" }}>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={volume}
+              onChange={e => {
+                const v = parseFloat(e.target.value);
+                setVolume(v);
+                if (audioRef.current) audioRef.current.volume = v;
+              }}
+              style={{
+                width: "100%",
+                background: `linear-gradient(to right, #c084fc ${volume * 100}%, #2a2a3a ${volume * 100}%)`,
+              }}
+            />
+          </div>
           <span style={{ fontSize: 16, color: "#9090b0" }}>🔊</span>
         </div>
       </div>
 
-      {/* Queue Sheet (unchanged functionality, only style updated) */}
+      {/* ADD TO PLAYLIST MODAL - Fixed z-index & style */}
+      {showAddPlaylist && (
+        <div className="modal-overlay" onClick={() => setShowAddPlaylist(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>Add to Playlist</h3>
+            {playlists.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "20px 0" }}>
+                <p style={{ color: "#a0a0c0", marginBottom: 12 }}>No playlists yet.</p>
+                <button onClick={() => { setShowAddPlaylist(false); window.location.href = "/dashboard?tab=library"; }} style={{
+                  background: "#c084fc", border: "none", borderRadius: 99, padding: "8px 20px",
+                  color: "#000", fontWeight: 700, cursor: "pointer"
+                }}>Create Playlist</button>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 300, overflowY: "auto" }}>
+                {playlists.map(pl => (
+                  <div key={pl.id} onClick={() => addToPlaylist(pl.id)} style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "10px 12px", borderRadius: 14,
+                    background: "rgba(255,255,255,0.06)", cursor: "pointer",
+                    transition: "background 0.2s",
+                  }}>
+                    <span style={{ fontSize: 24 }}>🎵</span>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{pl.name}</div>
+                      <div style={{ fontSize: 11, color: "#a0a0c0" }}>{pl.tracks.length} songs</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => setShowAddPlaylist(false)} style={{
+              width: "100%", marginTop: 16,
+              background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 99, padding: "10px", color: "#fff", fontWeight: 600, cursor: "pointer"
+            }}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* QUEUE SHEET - Fixed z-index */}
       {showQueue && (
         <>
-          <div onClick={() => setShowQueue(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", zIndex: 40 }} />
+          <div onClick={() => setShowQueue(false)} style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
+            backdropFilter: "blur(4px)", zIndex: 999
+          }} />
           <div className="queue-sheet">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <div style={{ fontWeight: 700, fontSize: 18, color: "#fff" }}>Options</div>
@@ -465,7 +558,7 @@ export default function PlayerPage() {
             </div>
             {[
               { icon: liked ? "❤️" : "♡", label: liked ? "Unlike" : "Like this track", action: () => { setLiked(l => !l); setShowQueue(false); } },
-              { icon: "➕", label: "Add to playlist", action: () => { setShowQueue(false); } },
+              { icon: "➕", label: "Add to playlist", action: () => { setShowQueue(false); setShowAddPlaylist(true); } },
               { icon: "🔗", label: "Share track", action: () => { if (navigator.share) navigator.share({ title: track.name, text: `Listening to ${track.name} on Wavely!`, url: window.location.href }); setShowQueue(false); } },
               { icon: "👤", label: "View artist", action: () => setShowQueue(false) },
               { icon: "💿", label: "View album", action: () => setShowQueue(false) },
