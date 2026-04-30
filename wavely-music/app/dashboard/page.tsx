@@ -20,7 +20,6 @@ interface Playlist {
   createdAt: number;
 }
 
-// Purple-themed icons
 const Icons = {
   home: <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L2 9l10 6 10-6-10-6zM2 15l10 6 10-6"/><path d="M2 12l10 6 10-6"/></svg>,
   search: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>,
@@ -91,7 +90,6 @@ export default function Dashboard() {
     setTimeout(() => setToast(null), 2500);
   }, []);
 
-  // Load user and playlists
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) window.location.href = "/auth";
@@ -124,7 +122,6 @@ export default function Dashboard() {
     });
   }, []);
 
-  // Auto-fetch first genre on mount
   useEffect(() => {
     fetchTracks(GENRES[0].tag);
   }, []);
@@ -251,7 +248,6 @@ export default function Dashboard() {
     setActiveTab("home");
   };
 
-  // Audio logic
   useEffect(() => {
     if (!currentTrack?.audio || !audioRef.current) return;
     audioRef.current.pause();
@@ -343,7 +339,6 @@ export default function Dashboard() {
   const progressPct = duration ? (progress / duration) * 100 : 0;
   const imgFallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect width='50' height='50' fill='%23181818'/%3E%3Ctext x='25' y='32' text-anchor='middle' font-size='22' fill='%23535353'%3E🎵%3C/text%3E%3C/svg%3E";
 
-  // Reusable Track Row Component
   const TrackRow = ({ track, showMenu = true }: { track: Track; showMenu?: boolean }) => (
     <div
       onClick={() => playTrack(track)}
@@ -412,10 +407,17 @@ export default function Dashboard() {
         @keyframes slideIn { from { transform:translateX(-100%); } to { transform:translateX(0); } }
         @keyframes slideUp { from { transform:translateY(100%); opacity:0; } to { transform:translateY(0); opacity:1; } }
         @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+        @keyframes glowPulse { 0% { box-shadow: 0 0 0 0 rgba(192,132,252,0.4); } 70% { box-shadow: 0 0 0 6px rgba(192,132,252,0); } 100% { box-shadow: 0 0 0 0 rgba(192,132,252,0); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0px); } }
 
         .fade-up { animation: fadeUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; }
         .icon-btn { transition: all 0.2s ease; }
         .icon-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); color: #c084fc !important; }
+        .nav-item { transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
+        .nav-item:hover { transform: translateY(-3px) scale(1.05); color: #c084fc !important; }
+        .nav-item.active { color: #c084fc; background: rgba(192,132,252,0.1); border-radius: 12px; }
+        .floating-player { transition: all 0.3s ease; backdrop-filter: blur(20px); }
+        .floating-player:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
         
         input[type='range'] { -webkit-appearance:none; background:transparent; cursor:pointer; }
         input[type='range']::-webkit-slider-track { background:#3f3f3f; border-radius:10px; height:4px; }
@@ -423,7 +425,7 @@ export default function Dashboard() {
         input[type='range']::-webkit-slider-thumb:hover { transform:scale(1.2); }
       `}</style>
 
-      {/* SIDEBAR */}
+      {/* SIDEBAR (same as before, omitted for brevity - keep your existing sidebar code) */}
       {sidebarOpen && (
         <>
           <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)", zIndex: 40 }} onClick={() => setSidebarOpen(false)} />
@@ -457,7 +459,6 @@ export default function Dashboard() {
                 <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: "#a1a1aa", textTransform: "uppercase" }}>Your Library</span>
                 <button onClick={() => setShowNewPlaylist(true)} style={{ width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", background: "rgba(255,255,255,0.05)", border: "none", cursor: "pointer", color: "#fff" }}>{Icons.plus}</button>
               </div>
-              {/* Liked Songs */}
               <div onClick={() => { setActiveTab("liked"); setSidebarOpen(false); }} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", borderRadius: 10, cursor: "pointer", marginBottom: 4 }}>
                 <div style={{ width: 42, height: 42, borderRadius: 10, background: "linear-gradient(135deg, #c084fc, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   {Icons.heartFill}
@@ -540,7 +541,7 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* FULL PLAYER */}
+      {/* FULL PLAYER MODAL (same as before - kept functional) */}
       {showPlayer && currentTrack && (
         <>
           <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.8)", backdropFilter: "blur(12px)", zIndex: 40 }} onClick={() => setShowPlayer(false)} />
@@ -595,9 +596,8 @@ export default function Dashboard() {
         <a href="/profile" style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg, #c084fc, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, textDecoration: "none", color: "#fff" }}>{displayName[0]?.toUpperCase()}</a>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN CONTENT (trimmed for brevity, but includes all tabs - keep your existing content) */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px 16px 100px" }}>
-
         {/* HOME */}
         {activeTab === "home" && (
           <div className="fade-up">
@@ -605,7 +605,6 @@ export default function Dashboard() {
               <span style={{ color: "#a1a1aa" }}>{Icons.search}</span>
               <span style={{ color: "#a1a1aa", fontSize: 14 }}>Search songs, artists...</span>
             </div>
-
             <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 24, scrollbarWidth: "thin" }}>
               {GENRES.map((g, i) => (
                 <button key={i} onClick={() => switchGenre(i)} style={{
@@ -615,14 +614,12 @@ export default function Dashboard() {
                 }}>{g.label}</button>
               ))}
             </div>
-
             {loading && (
               <div style={{ textAlign: "center", padding: "60px 0", color: "#a1a1aa" }}>
                 <div style={{ fontSize: 32, animation: "spin 1s linear infinite", display: "inline-block", marginBottom: 12 }}>🎵</div>
                 <div>Loading...</div>
               </div>
             )}
-
             {!loading && featuredTrack && (
               <>
                 <div style={{ background: "linear-gradient(135deg, #1a1a2e, #0f0f0f)", borderRadius: 20, padding: 16, marginBottom: 24, display: "flex", gap: 16, alignItems: "center" }}>
@@ -643,7 +640,6 @@ export default function Dashboard() {
                 </div>
               </>
             )}
-
             {!loading && !featuredTrack && (
               <div style={{ textAlign: "center", padding: "60px 20px", color: "#a1a1aa" }}>
                 <div style={{ fontSize: 48, marginBottom: 12 }}>😕</div>
@@ -779,22 +775,64 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* MINI PLAYER */}
+      {/* FLOATING MINI PLAYER - NEW DESIGN */}
       {currentTrack && (
-        <div onClick={() => setShowPlayer(true)} style={{ position: "fixed", bottom: 60, left: 0, right: 0, backgroundColor: "#0f0f0f", borderTop: "1px solid rgba(255,255,255,0.1)", zIndex: 30, cursor: "pointer" }}>
-          <div style={{ height: 2, background: "#3f3f3f" }}>
-            <div style={{ height: "100%", background: "#c084fc", width: `${progressPct}%`, transition: "width 0.1s" }} />
+        <div 
+          className="floating-player"
+          onClick={() => setShowPlayer(true)}
+          style={{
+            position: "fixed",
+            bottom: "80px", // sits above bottom nav
+            left: "12px",
+            right: "12px",
+            backgroundColor: "rgba(20, 20, 30, 0.95)",
+            backdropFilter: "blur(20px)",
+            borderRadius: "20px",
+            border: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 8px 25px rgba(0,0,0,0.4), 0 0 0 1px rgba(192,132,252,0.1)",
+            cursor: "pointer",
+            zIndex: 35,
+            transition: "all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1)",
+          }}
+        >
+          {/* Progress bar */}
+          <div style={{ height: 3, background: "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" }}>
+            <div style={{ height: "100%", background: "#c084fc", width: `${progressPct}%`, transition: "width 0.15s linear" }} />
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px" }}>
-            <img src={currentTrack.image || imgFallback} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover" }} />
+          
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px" }}>
+            <img 
+              src={currentTrack.image || imgFallback} 
+              alt="" 
+              style={{ width: 48, height: 48, borderRadius: 12, objectFit: "cover", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }} 
+            />
             <div style={{ flex: 1, overflow: "hidden" }}>
-              <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#fff" }}>{currentTrack.name}</div>
-              <div style={{ color: "#a1a1aa", fontSize: 11 }}>{currentTrack.artist_name}</div>
+              <div style={{ fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#fff" }}>
+                {currentTrack.name}
+              </div>
+              <div style={{ color: "#a1a1aa", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {currentTrack.artist_name}
+              </div>
             </div>
-            <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 4, alignItems: "center" }}>
-              <button onClick={() => toggleLike(currentTrack.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, borderRadius: "50%", color: liked.has(currentTrack.id) ? "#c084fc" : "#a1a1aa" }}>{liked.has(currentTrack.id) ? Icons.heartFill : Icons.heart}</button>
-              <button onClick={() => setPlaying(p => !p)} style={{ width: 40, height: 40, borderRadius: "50%", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#000" }}>{playing ? Icons.pause : Icons.play}</button>
-              <button onClick={() => skip(1)} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, borderRadius: "50%", color: "#fff" }}>{Icons.next}</button>
+            <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <button 
+                onClick={() => toggleLike(currentTrack.id)} 
+                style={{ background: "none", border: "none", cursor: "pointer", padding: 8, borderRadius: "50%", color: liked.has(currentTrack.id) ? "#c084fc" : "#a1a1aa", transition: "all 0.2s" }}
+              >
+                {liked.has(currentTrack.id) ? Icons.heartFill : Icons.heart}
+              </button>
+              <button 
+                onClick={() => setPlaying(p => !p)} 
+                style={{ width: 40, height: 40, borderRadius: "50%", background: "#c084fc", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#000", transition: "transform 0.15s, background 0.2s" }}
+              >
+                {playing ? Icons.pause : Icons.play}
+              </button>
+              <button 
+                onClick={() => skip(1)} 
+                style={{ background: "none", border: "none", cursor: "pointer", padding: 8, borderRadius: "50%", color: "#fff", transition: "all 0.2s" }}
+              >
+                {Icons.next}
+              </button>
             </div>
           </div>
         </div>
@@ -802,33 +840,91 @@ export default function Dashboard() {
 
       {/* TOAST */}
       {toast && (
-        <div style={{ position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)", backgroundColor: "#1f1f1f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 99, padding: "10px 20px", color: "#fff", fontSize: 13, fontWeight: 500, zIndex: 100, whiteSpace: "nowrap", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", animation: "toastIn 0.3s ease" }}>
+        <div style={{ position: "fixed", bottom: 140, left: "50%", transform: "translateX(-50%)", backgroundColor: "#1f1f1f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 99, padding: "10px 20px", color: "#fff", fontSize: 13, fontWeight: 500, zIndex: 100, whiteSpace: "nowrap", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", animation: "toastIn 0.3s ease" }}>
           {toast}
         </div>
       )}
 
-      {/* BOTTOM NAV */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(10,10,10,0.95)", backdropFilter: "blur(20px)", borderTop: "1px solid rgba(255,255,255,0.08)", zIndex: 30, display: "flex", justifyContent: "space-around", padding: "8px 0 16px" }}>
+      {/* BOTTOM NAVIGATION - ENHANCED WITH ANIMATIONS */}
+      <div style={{ 
+        position: "fixed", 
+        bottom: 0, 
+        left: 0, 
+        right: 0, 
+        backgroundColor: "rgba(10,10,12,0.96)", 
+        backdropFilter: "blur(20px)", 
+        borderTop: "1px solid rgba(255,255,255,0.08)", 
+        zIndex: 30, 
+        display: "flex", 
+        justifyContent: "space-around", 
+        padding: "8px 0 18px",
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.3)"
+      }}>
         {[
           { id: "home", icon: Icons.home, label: "Home" },
           { id: "search", icon: Icons.search, label: "Search" },
           { id: "library", icon: Icons.library, label: "Library" },
           { id: "activity", icon: Icons.bell, label: "Activity" },
-        ].map(tab => (
-          <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-            background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "6px 20px",
-            color: activeTab === tab.id ? "#c084fc" : "#a1a1aa", transition: "all 0.2s", borderRadius: 12,
-          }}>
-            {tab.icon}
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 0.5 }}>{tab.label.toUpperCase()}</span>
-          </button>
-        ))}
+        ].map(tab => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button 
+              key={tab.id} 
+              onClick={() => setActiveTab(tab.id)}
+              className="nav-item"
+              style={{
+                background: "none", 
+                border: "none", 
+                cursor: "pointer", 
+                display: "flex", 
+                flexDirection: "column", 
+                alignItems: "center", 
+                gap: 6, 
+                padding: "6px 16px",
+                color: isActive ? "#c084fc" : "#a1a1aa",
+                transition: "all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1)",
+                borderRadius: "20px",
+                position: "relative",
+              }}
+            >
+              <div style={{
+                transform: isActive ? "scale(1.1)" : "scale(1)",
+                transition: "transform 0.2s ease",
+              }}>
+                {tab.icon}
+              </div>
+              <span style={{ 
+                fontSize: 10, 
+                fontWeight: 700, 
+                letterSpacing: 0.5,
+                background: isActive ? "linear-gradient(135deg, #c084fc, #e9d5ff)" : "none",
+                WebkitBackgroundClip: isActive ? "text" : "unset",
+                WebkitTextFillColor: isActive ? "transparent" : "inherit",
+              }}>
+                {tab.label.toUpperCase()}
+              </span>
+              {isActive && (
+                <div style={{
+                  position: "absolute",
+                  bottom: -6,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 24,
+                  height: 3,
+                  background: "#c084fc",
+                  borderRadius: 2,
+                  animation: "glowPulse 1.5s infinite",
+                }} />
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-// SEARCH COMPONENT (fully functional)
+// SEARCH COMPONENT (unchanged, fully functional)
 function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, liked, toggleLike, setShowAddToPlaylist, Icons }: any) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
