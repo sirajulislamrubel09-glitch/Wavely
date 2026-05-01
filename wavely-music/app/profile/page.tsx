@@ -148,13 +148,14 @@ export default function ProfilePage() {
         .settings-row:hover { background: #1e1e1e; }
         .settings-row:active { background: #282828; }
 
-        .nav-item {
+        .nav-item, .nav-button {
           display: flex; flex-direction: column; align-items: center;
           gap: 3px; padding: 8px 16px; cursor: pointer;
-          transition: all 0.15s; text-decoration: none;
-          border-radius: 10px;
+          transition: all 0.15s ease; text-decoration: none;
+          border-radius: 18px;
         }
-        .nav-item:active { transform: scale(0.9); }
+        .nav-button.active { color: #ba55d3; transform: translateY(-1px); }
+        .nav-button:active { transform: scale(0.98); }
 
         .tag-pill {
           border-radius: 99px; padding: 6px 14px;
@@ -355,16 +356,19 @@ export default function ProfilePage() {
       )}
 
       {/* Bottom Nav */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#0a0a0a", borderTop: "1px solid #282828", padding: "10px 0 14px", zIndex: 50, display: "flex", justifyContent: "space-around", maxWidth: 480, margin: "0 auto" }}>
+      <div className="bottom-nav" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#0a0a0a", borderTop: "1px solid #282828", padding: "10px 0 14px", zIndex: 50, display: "flex", justifyContent: "space-around", maxWidth: 480, margin: "0 auto" }}>
         {[
           { icon: Icons.home, label: "HOME", href: "/dashboard", active: false },
           { icon: Icons.search, label: "SEARCH", href: "/dashboard", active: false },
           { icon: Icons.user, label: "PROFILE", href: "/profile", active: true },
           { icon: Icons.bell, label: "ACTIVITY", href: "/dashboard", active: false },
         ].map((tab) => (
-          <a key={tab.label} href={tab.href} className="nav-item" style={{ color: tab.active ? "#ba55d3" : "#535353" }}>
-            {tab.icon}
+          <a key={tab.label} href={tab.href} className={`nav-button${tab.active ? " active" : ""}`} style={{ color: tab.active ? "#ba55d3" : "#535353" }}>
+            <div style={{ transform: tab.active ? "scale(1.1)" : "scale(1)", transition: "transform 0.2s ease" }}>{tab.icon}</div>
             <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 0.5 }}>{tab.label}</span>
+            {tab.active && (
+              <div style={{ width: 24, height: 3, background: "#ba55d3", borderRadius: 2, marginTop: 4 }} />
+            )}
           </a>
         ))}
       </div>
