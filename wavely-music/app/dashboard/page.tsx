@@ -835,25 +835,6 @@ export default function Dashboard() {
         {/* HOME */}
         {activeTab === "home" && (
           <div className="fade-up">
-            <div className="glass-card hero-card" style={{ marginBottom: 24 }}>
-              <div className="hero-card-header">
-                <div className="hero-copy">
-                  <div className="eyebrow">Dashboard</div>
-                  <h1>Good vibes, {displayName}</h1>
-                  <p>Curated music discovery, your playlists, and playback controls in one immersive place.</p>
-                </div>
-                <div className="hero-actions">
-                  <button onClick={() => setSidebarOpen(true)} className="btn btn-primary">Open Library</button>
-                  <button onClick={() => setActiveTab("search")} className="btn btn-secondary">Find music</button>
-                </div>
-              </div>
-              <div className="hero-stats">
-                <div className="stat-card"><span>Playlists</span><strong>{playlists.length}</strong></div>
-                <div className="stat-card"><span>Liked</span><strong>{liked.size} songs</strong></div>
-                <div className="stat-card"><span>Current Mood</span><strong>{GENRES[activeGenre].label}</strong></div>
-              </div>
-            </div>
-
             <div onClick={() => setActiveTab("search")} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 18, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, marginBottom: 24, cursor: "pointer", transition: "background 0.15s" }}>
               <span style={{ color: "#a1a1aa" }}>{Icons.search}</span>
               <span style={{ color: "#a1a1aa", fontSize: 14 }}>Search songs, artists...</span>
@@ -1152,19 +1133,6 @@ export default function Dashboard() {
               }}>
                 {tab.label.toUpperCase()}
               </span>
-              {isActive && (
-                <div style={{
-                  position: "absolute",
-                  bottom: -6,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: 24,
-                  height: 3,
-                  background: "#c084fc",
-                  borderRadius: 2,
-                  animation: "glowPulse 1.5s infinite",
-                }} />
-              )}
             </button>
           );
         })}
