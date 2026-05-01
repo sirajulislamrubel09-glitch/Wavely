@@ -31,11 +31,27 @@ export default function AuthPage() {
         password,
         options: { data: { username } },
       });
+      
       if (error) {
-        setMessage({ text: error.message, type: "error" });
-      } else {
-        setMessage({ text: "Check your email to confirm your account! 🎉", type: "success" });
-      }
+  setMessage({ text: error.message, type: "error" });
+} else {
+  // Insert user into users table immediately
+  const { data: signUpData } = await supabase.auth.signUp({
+    email, password, options: { data: { username } }
+  });
+  if (signUpData.user) {
+    await supabase.from("users").upsert({
+      id: signUpData.user.id,
+      username: username,
+      bio: "Exploring the deepest frequencies.",
+      is_premium: false,
+      hours_listened: 0,
+      top_genre: "Bollywood",
+    }, { onConflict: "id" });
+  }
+  setMessage({ text: "Check your email to confirm! 🎉", type: "success" });
+}
+
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
