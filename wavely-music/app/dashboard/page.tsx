@@ -341,6 +341,7 @@ export default function Dashboard() {
 
   const TrackRow = ({ track, showMenu = true }: { track: Track; showMenu?: boolean }) => (
     <div
+      className={`track-row${currentTrack?.id === track.id ? " active" : ""}`}
       onClick={() => playTrack(track)}
       style={{
         display: "flex", alignItems: "center", gap: 14,
@@ -390,39 +391,272 @@ export default function Dashboard() {
   );
 
   return (
-    <div style={{ backgroundColor: "#0a0a0a", minHeight: "100vh", fontFamily: "'Inter', 'DM Sans', system-ui, sans-serif", color: "#fff", display: "flex", flexDirection: "column" }}>
+    <div className="dashboard-shell">
       <audio ref={audioRef} onTimeUpdate={handleTimeUpdate} onEnded={handleEnded} onLoadedMetadata={handleTimeUpdate} />
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #1f1f1f; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #3f3f3f; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #c084fc; }
+        html, body { min-height: 100%; }
+        body { background: transparent; color: #edf2ff; font-family: 'Inter', 'DM Sans', system-ui, sans-serif; }
+        img { display: block; max-width: 100%; }
+        button, input, textarea { font: inherit; }
+        button { outline: none; }
 
-        @keyframes waveAnim { 0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-        @keyframes slideIn { from { transform:translateX(-100%); } to { transform:translateX(0); } }
-        @keyframes slideUp { from { transform:translateY(100%); opacity:0; } to { transform:translateY(0); opacity:1; } }
-        @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
-        @keyframes glowPulse { 0% { box-shadow: 0 0 0 0 rgba(192,132,252,0.4); } 70% { box-shadow: 0 0 0 6px rgba(192,132,252,0); } 100% { box-shadow: 0 0 0 0 rgba(192,132,252,0); } }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0px); } }
+        .dashboard-shell {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          background: radial-gradient(circle at top, rgba(192,132,252,0.16), transparent 20%),
+                      radial-gradient(circle at 20% 8%, rgba(34,211,238,0.1), transparent 18%),
+                      linear-gradient(180deg, #08080d 0%, #07070c 100%);
+        }
 
-        .fade-up { animation: fadeUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; }
-        .icon-btn { transition: all 0.2s ease; }
-        .icon-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); color: #c084fc !important; }
-        .nav-item { transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
-        .nav-item:hover { transform: translateY(-3px) scale(1.05); color: #c084fc !important; }
-        .nav-item.active { color: #c084fc; background: rgba(192,132,252,0.1); border-radius: 12px; }
-        .floating-player { transition: all 0.3s ease; backdrop-filter: blur(20px); }
-        .floating-player:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
-        
-        input[type='range'] { -webkit-appearance:none; background:transparent; cursor:pointer; }
-        input[type='range']::-webkit-slider-track { background:#3f3f3f; border-radius:10px; height:4px; }
-        input[type='range']::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:#c084fc; margin-top:-5px; box-shadow:0 2px 8px rgba(192,132,252,0.5); transition:transform 0.1s; }
-        input[type='range']::-webkit-slider-thumb:hover { transform:scale(1.2); }
+        .dashboard-header {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          background: rgba(7,7,12,0.92);
+          backdrop-filter: blur(18px);
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          padding: 14px 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+        }
+
+        .dashboard-header .brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-weight: 800;
+          font-size: 18px;
+        }
+
+        .dashboard-content {
+          flex: 1;
+          overflow-y: auto;
+          padding: 22px 20px 118px;
+          width: min(1280px, 100%);
+          margin: 0 auto;
+        }
+
+        .glass-card {
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 24px;
+          box-shadow: 0 28px 80px rgba(0,0,0,0.35);
+          backdrop-filter: blur(16px);
+        }
+
+        .glass-card-soft {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 20px;
+        }
+
+        .section-title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+
+        .section-title h2 {
+          font-size: 22px;
+          font-weight: 800;
+          letter-spacing: -0.5px;
+        }
+
+        .section-title small {
+          color: #a1a1aa;
+          font-size: 13px;
+        }
+
+        .hero-card {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          padding: 24px;
+          background: linear-gradient(180deg, rgba(192,132,252,0.16), rgba(13,14,20,0.95));
+        }
+
+        .hero-card-header {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 18px;
+        }
+
+        .hero-copy .eyebrow {
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          font-size: 11px;
+          color: #c084fc;
+          font-weight: 700;
+          margin-bottom: 12px;
+        }
+
+        .hero-copy h1 {
+          font-size: 32px;
+          line-height: 1.05;
+          margin-bottom: 12px;
+        }
+
+        .hero-copy p {
+          color: #d4d4dd;
+          font-size: 15px;
+          max-width: 620px;
+        }
+
+        .hero-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          align-items: center;
+        }
+
+        .hero-stats {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 14px;
+        }
+
+        .stat-card {
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px;
+          padding: 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .stat-card span {
+          color: #a1a1aa;
+          text-transform: uppercase;
+          font-size: 11px;
+          letter-spacing: 1.1px;
+        }
+
+        .stat-card strong {
+          font-size: 25px;
+          line-height: 1;
+          color: #fff;
+        }
+
+        .pill-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .pill {
+          border-radius: 999px;
+          padding: 9px 18px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          border: 1px solid transparent;
+          white-space: nowrap;
+        }
+
+        .pill.active {
+          background: #c084fc;
+          color: #080808;
+          border-color: transparent;
+        }
+
+        .pill.secondary {
+          background: rgba(255,255,255,0.06);
+          color: #f8f8ff;
+          border-color: rgba(255,255,255,0.12);
+        }
+
+        .search-input {
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 18px;
+          background: rgba(255,255,255,0.04);
+          padding: 14px 18px;
+          color: #fff;
+          width: 100%;
+          min-width: 0;
+        }
+
+        .search-input::placeholder { color: #9ca3af; }
+        .search-input:focus { outline: none; border-color: rgba(192,132,252,0.55); box-shadow: 0 0 0 4px rgba(192,132,252,0.08); }
+
+        .btn { border: none; border-radius: 999px; cursor: pointer; transition: all 0.18s ease; font-weight: 700; }
+        .btn-primary { background: linear-gradient(135deg, #c084fc, #8b5cf6); color: #060b13; }
+        .btn-secondary { background: rgba(255,255,255,0.08); color: #f8f8ff; }
+        .btn-ghost { background: none; color: #f8f8ff; }
+        .btn-circle { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        .track-row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 18px;
+          border-radius: 18px;
+          background: rgba(255,255,255,0.02);
+          border: 1px solid transparent;
+          transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+          cursor: pointer;
+        }
+
+        .track-row:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+        .track-row.active { background: rgba(192,132,252,0.13); border-color: rgba(192,132,252,0.35); }
+        .track-info { flex: 1; min-width: 0; overflow: hidden; }
+        .track-info .title { font-size: 14px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-info .meta { font-size: 12px; color: #a1a1aa; }
+        .track-art { width: 52px; height: 52px; border-radius: 16px; object-fit: cover; box-shadow: 0 14px 35px rgba(0,0,0,0.35); }
+        .track-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .track-actions button { background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; color: #a1a1aa; transition: all 0.18s ease; }
+        .track-actions button:hover { background: rgba(255,255,255,0.08); color: #c084fc; }
+
+        .floating-player { position: fixed; bottom: 88px; left: 12px; right: 12px; background: rgba(10,10,16,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; backdrop-filter: blur(24px); box-shadow: 0 18px 50px rgba(0,0,0,0.35); padding: 12px 14px; cursor: pointer; z-index: 35; }
+        .floating-player:hover { transform: translateY(-2px); }
+        .floating-player-body { display: flex; align-items: center; gap: 14px; }
+        .floating-player-art { width: 52px; height: 52px; border-radius: 18px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+        .floating-player-meta { flex: 1; min-width: 0; }
+        .floating-player-meta .title { font-weight: 700; font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .floating-player-meta .subtitle { color: #a1a1aa; font-size: 12px; margin-top: 2px; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(8,8,12,0.98); backdrop-filter: blur(24px); border-top: 1px solid rgba(255,255,255,0.08); z-index: 30; display: flex; justify-content: space-around; padding: 10px 0 18px; box-shadow: 0 -18px 34px rgba(0,0,0,0.25); }
+        .nav-button { background: none; border: none; color: #a1a1aa; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px; border-radius: 18px; transition: all 0.18s ease; }
+        .nav-button.active { color: #c084fc; transform: translateY(-1px); }
+        .nav-button.active::after { content: ""; width: 24px; height: 3px; border-radius: 999px; background: #c084fc; margin-top: 4px; animation: glowPulse 1.6s infinite; }
+        .nav-button span { font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 40; }
+        .modal-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15,15,20,0.95); border: 1px solid rgba(255,255,255,0.08); padding: 24px; border-radius: 24px; z-index: 50; width: min(100%, 380px); box-shadow: 0 24px 80px rgba(0,0,0,0.35); }
+        .modal-card.full { max-height: 90vh; overflow-y: auto; }
+        .modal-card h3 { margin-bottom: 18px; font-size: 20px; color: #fff; }
+        .modal-input { width: 100%; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; padding: 14px 16px; font-size: 14px; }
+        .modal-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+        .footer-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+        input[type='range'] { -webkit-appearance: none; width: 100%; height: 4px; background: #2b2b2b; border-radius: 999px; cursor: pointer; }
+        input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #c084fc; box-shadow: 0 0 0 6px rgba(192,132,252,0.12); transition: transform 0.1s ease; }
+        input[type='range']::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        input[type='range']::-webkit-slider-track { background: #2b2b2b; border-radius: 999px; height: 4px; }
+
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(192,132,252,0.35); }
+
+        @keyframes waveAnim { 0%,100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+        @keyframes slideUp { from { transform: translateY(100%); opacity:0; } to { transform: translateY(0); opacity:1; } }
+        @keyframes toastIn { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+        @keyframes glowPulse { 0% { box-shadow: 0 0 0 0 rgba(192,132,252,0.4); } 70% { box-shadow: 0 0 0 8px rgba(192,132,252,0); } 100% { box-shadow: 0 0 0 0 rgba(192,132,252,0); } }
       `}</style>
 
       {/* SIDEBAR (same as before, omitted for brevity - keep your existing sidebar code) */}
@@ -590,28 +824,43 @@ export default function Dashboard() {
       )}
 
       {/* HEADER */}
-      <div style={{ position: "sticky", top: 0, zIndex: 20, backgroundColor: "rgba(10,10,10,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <button onClick={() => setSidebarOpen(true)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 8, borderRadius: "50%", color: "#fff" }}>{Icons.menu}</button>
-        <span style={{ fontWeight: 800, fontSize: 18, background: "linear-gradient(135deg, #c084fc, #e9d5ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Wavely</span>
-        <a href="/profile" style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg, #c084fc, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, textDecoration: "none", color: "#fff" }}>{displayName[0]?.toUpperCase()}</a>
+      <div className="dashboard-header">
+        <button onClick={() => setSidebarOpen(true)} className="btn btn-circle" style={{ color: "#fff", background: "rgba(255,255,255,0.05)" }}>{Icons.menu}</button>
+        <span className="brand"><span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 14, background: "linear-gradient(135deg, #c084fc, #8b5cf6)" }}>{Icons.music}</span>Wavely</span>
+        <a href="/profile" className="btn btn-circle" style={{ background: "linear-gradient(135deg, #c084fc, #8b5cf6)", color: "#fff", textDecoration: "none" }}>{displayName[0]?.toUpperCase()}</a>
       </div>
 
       {/* MAIN CONTENT (trimmed for brevity, but includes all tabs - keep your existing content) */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "20px 16px 100px" }}>
+      <div className="dashboard-content">
         {/* HOME */}
         {activeTab === "home" && (
           <div className="fade-up">
-            <div onClick={() => setActiveTab("search")} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", gap: 12, marginBottom: 24, cursor: "pointer", transition: "background 0.15s" }}>
+            <div className="glass-card hero-card" style={{ marginBottom: 24 }}>
+              <div className="hero-card-header">
+                <div className="hero-copy">
+                  <div className="eyebrow">Dashboard</div>
+                  <h1>Good vibes, {displayName}</h1>
+                  <p>Curated music discovery, your playlists, and playback controls in one immersive place.</p>
+                </div>
+                <div className="hero-actions">
+                  <button onClick={() => setSidebarOpen(true)} className="btn btn-primary">Open Library</button>
+                  <button onClick={() => setActiveTab("search")} className="btn btn-secondary">Find music</button>
+                </div>
+              </div>
+              <div className="hero-stats">
+                <div className="stat-card"><span>Playlists</span><strong>{playlists.length}</strong></div>
+                <div className="stat-card"><span>Liked</span><strong>{liked.size} songs</strong></div>
+                <div className="stat-card"><span>Current Mood</span><strong>{GENRES[activeGenre].label}</strong></div>
+              </div>
+            </div>
+
+            <div onClick={() => setActiveTab("search")} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 18, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, marginBottom: 24, cursor: "pointer", transition: "background 0.15s" }}>
               <span style={{ color: "#a1a1aa" }}>{Icons.search}</span>
               <span style={{ color: "#a1a1aa", fontSize: 14 }}>Search songs, artists...</span>
             </div>
-            <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 24, scrollbarWidth: "thin" }}>
+            <div className="pill-grid" style={{ marginBottom: 24 }}>
               {GENRES.map((g, i) => (
-                <button key={i} onClick={() => switchGenre(i)} style={{
-                  background: activeGenre === i ? "#c084fc" : "#1f1f1f",
-                  color: activeGenre === i ? "#000" : "#fff",
-                  border: "none", borderRadius: 99, padding: "8px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s", whiteSpace: "nowrap",
-                }}>{g.label}</button>
+                <button key={i} onClick={() => switchGenre(i)} className={`pill ${activeGenre === i ? "active" : "secondary"}`}>{g.label}</button>
               ))}
             </div>
             {loading && (
@@ -846,7 +1095,7 @@ export default function Dashboard() {
       )}
 
       {/* BOTTOM NAVIGATION - ENHANCED WITH ANIMATIONS */}
-      <div style={{ 
+      <div className="bottom-nav" style={{ 
         position: "fixed", 
         bottom: 0, 
         left: 0, 
@@ -871,7 +1120,7 @@ export default function Dashboard() {
             <button 
               key={tab.id} 
               onClick={() => setActiveTab(tab.id)}
-              className="nav-item"
+              className={`nav-button${isActive ? " active" : ""}`}
               style={{
                 background: "none", 
                 border: "none", 
@@ -965,8 +1214,8 @@ function SearchTab({ playTrack, currentTrack, playing, formatTime, imgFallback, 
       <h2 style={{ fontWeight: 700, fontSize: 22, letterSpacing: -0.5, marginBottom: 16 }}>Search</h2>
       <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
         <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && search()} placeholder="Artists, songs, albums..."
-          style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "12px 16px", color: "#fff", fontSize: 14, outline: "none", transition: "border-color 0.2s" }} />
-        <button onClick={() => search()} style={{ background: "#c084fc", border: "none", borderRadius: 12, padding: "0 20px", color: "#000", fontWeight: 700, cursor: "pointer", fontSize: 16 }}>→</button>
+          className="search-input" />
+        <button onClick={() => search()} className="btn btn-primary" style={{ padding: "0 20px", fontSize: 16 }}>→</button>
       </div>
 
       {!searched && (
